@@ -1,30 +1,35 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
-import { TextInput, Button } from 'react-native-paper';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
-import Toast from 'react-native-toast-message';
-import { authService } from '../services/auth';
+import React, { useState } from "react";
+import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
+import { TextInput, Button } from "react-native-paper";
+import { Formik } from "formik";
+import * as Yup from "yup";
+import Toast from "react-native-toast-message";
+import { useNavigation } from "@react-navigation/native";
+import { authService } from "../services/auth";
 
 const validationSchema = Yup.object().shape({
-    emailOrPhone: Yup.string()
-      .required('Vui lòng nhập email hoặc số điện thoại')
-      .test('is-valid', 'Vui lòng nhập đúng định dạng email hoặc số điện thoại', (value) => {
+  emailOrPhone: Yup.string()
+    .required("Vui lòng nhập email hoặc số điện thoại")
+    .test(
+      "is-valid",
+      "Vui lòng nhập đúng định dạng email hoặc số điện thoại",
+      (value) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const phoneRegex = /^0\d{9,10}$/; // Số điện thoại bắt đầu bằng 0 và có từ 10 đến 11 số
         return emailRegex.test(value) || phoneRegex.test(value);
-      }),
-    password: Yup.string()
-      .required('Vui lòng nhập mật khẩu')
-      .min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
-  });
+      }
+    ),
+  password: Yup.string()
+    .required("Vui lòng nhập mật khẩu")
+    .min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+});
 
-  const isEmail = (value) => {
-    return value.includes('@');
-  }
-
+const isEmail = (value) => {
+  return value.includes("@");
+};
 
 const LoginScreen = () => {
+  const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -37,13 +42,14 @@ const LoginScreen = () => {
         password: values.password,
       });
       Toast.show({
-        type: 'success',
-        text1: 'Đăng nhập thành công',
+        type: "success",
+        text1: "Đăng nhập thành công",
       });
+      navigation.replace("Main");
     } catch (error) {
       Toast.show({
-        type: 'error',
-        text1: error.message || 'Thông tin không đúng',
+        type: "error",
+        text1: error.message || "Thông tin không đúng",
       });
     } finally {
       setLoading(false);
@@ -54,7 +60,7 @@ const LoginScreen = () => {
     <View style={styles.container}>
       <View style={styles.logoContainer}>
         <Image
-          source={require('../../assets/logo.webp')}
+          source={require("../../assets/logo.webp")}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -65,7 +71,7 @@ const LoginScreen = () => {
       <Text style={styles.loginTitle}>ĐĂNG NHẬP</Text>
 
       <Formik
-        initialValues={{ emailOrPhone: '', password: '' }}
+        initialValues={{ emailOrPhone: "", password: "" }}
         validationSchema={validationSchema}
         onSubmit={handleLogin}
       >
@@ -76,7 +82,7 @@ const LoginScreen = () => {
               style={styles.input}
               placeholder="VD: 0938123456"
               value={values.emailOrPhone}
-              onChangeText={handleChange('emailOrPhone')}
+              onChangeText={handleChange("emailOrPhone")}
               mode="outlined"
               textColor="black"
               outlineColor="#ddd"
@@ -92,7 +98,7 @@ const LoginScreen = () => {
               style={styles.input}
               placeholder="Nhập mật khẩu"
               value={values.password}
-              onChangeText={handleChange('password')}
+              onChangeText={handleChange("password")}
               secureTextEntry={!showPassword}
               mode="outlined"
               outlineColor="#ddd"
@@ -101,10 +107,10 @@ const LoginScreen = () => {
               disabled={loading}
               right={
                 <TextInput.Icon
-                  icon={showPassword ? 'eye-off' : 'eye'}
+                  icon={showPassword ? "eye-off" : "eye"}
                   onPress={() => {
-                    setShowPassword(!showPassword); 
-                }}
+                    setShowPassword(!showPassword);
+                  }}
                 />
               }
             />
@@ -135,9 +141,9 @@ const LoginScreen = () => {
 
             <View style={styles.helpContainer}>
               <Text style={styles.helpText}>
-                Vui lòng liên hệ hotline{' '}
-                <Text style={styles.phoneNumber}>0977854609</Text> nếu bạn cần hỗ
-                trợ.{' '}
+                Vui lòng liên hệ hotline{" "}
+                <Text style={styles.phoneNumber}>0977854609</Text> nếu bạn cần
+                hỗ trợ.{" "}
                 <TouchableOpacity disabled={loading}>
                   <Text style={styles.callNowText}>Gọi ngay</Text>
                 </TouchableOpacity>
@@ -146,7 +152,7 @@ const LoginScreen = () => {
 
             <View style={styles.registerContainer}>
               <Text style={styles.registerText}>
-                Bạn chưa có tài khoản?{' '}
+                Bạn chưa có tài khoản?{" "}
                 <TouchableOpacity disabled={loading}>
                   <Text style={styles.registerLink}>Đăng ký ngay</Text>
                 </TouchableOpacity>
@@ -163,11 +169,11 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 20,
   },
   logoContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 40,
     marginBottom: 30,
   },
@@ -177,82 +183,82 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 10,
   },
   subtitle: {
     fontSize: 16,
-    color: '#ff4d4f',
+    color: "#ff4d4f",
     marginTop: 5,
   },
   loginTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   formContainer: {
-    width: '100%',
+    width: "100%",
   },
   inputLabel: {
     fontSize: 16,
     marginBottom: 5,
-    color: '#333',
+    color: "#333",
   },
   input: {
     marginBottom: 15,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   errorText: {
-    color: '#ff4d4f',
+    color: "#ff4d4f",
     fontSize: 12,
     marginTop: -10,
     marginBottom: 10,
   },
   forgotPassword: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     marginBottom: 20,
   },
   forgotPasswordText: {
-    color: '#ff4d4f',
+    color: "#ff4d4f",
     fontSize: 14,
   },
   loginButton: {
-    backgroundColor: '#ff4d4f',
+    backgroundColor: "#ff4d4f",
     padding: 5,
     borderRadius: 25,
   },
   loginButtonText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   helpContainer: {
     marginTop: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   helpText: {
-    textAlign: 'center',
-    color: '#666',
+    textAlign: "center",
+    color: "#666",
   },
   phoneNumber: {
-    color: '#333',
-    fontWeight: 'bold',
+    color: "#333",
+    fontWeight: "bold",
   },
   callNowText: {
-    color: '#ff4d4f',
-    fontWeight: 'bold',
+    color: "#ff4d4f",
+    fontWeight: "bold",
   },
   registerContainer: {
     marginTop: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   registerText: {
-    color: '#666',
+    color: "#666",
   },
   registerLink: {
-    color: '#ff4d4f',
-    fontWeight: 'bold',
+    color: "#ff4d4f",
+    fontWeight: "bold",
   },
 });
 
-export default LoginScreen; 
+export default LoginScreen;

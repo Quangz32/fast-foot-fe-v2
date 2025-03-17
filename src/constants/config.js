@@ -1,9 +1,13 @@
-export const API_URL = 'http://localhost:2003/api'; // Replace with your actual API URL
+export const API_URL = 'http://localhost:2003/api';
+
+export const API_URL_IMAGE = 'http://localhost:2003';
 
 export const ENDPOINTS = {
   LOGIN: '/auth/login',
   REGISTER: '/auth/register',
   FORGOT_PASSWORD: '/auth/forgot-password',
+
+  CATEGORIES: '/categories',
 };
 
 export const STATUS_CODES = {

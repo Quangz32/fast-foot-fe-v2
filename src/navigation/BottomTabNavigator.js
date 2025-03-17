@@ -1,10 +1,11 @@
-import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import HomeScreen from '../screens/HomeScreen';
-import OrdersScreen from '../screens/OrdersScreen';
-import NotificationsScreen from '../screens/NotificationsScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import React from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import HomeScreen from "../screens/HomeScreen";
+import FoodsScreen from "../screens/FoodsScreen";
+import OrdersScreen from "../screens/OrdersScreen";
+import NotificationsScreen from "../screens/NotificationsScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -12,8 +13,8 @@ const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#ff4d4f',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: "#ff4d4f",
+        tabBarInactiveTintColor: "gray",
         tabBarStyle: {
           paddingBottom: 5,
           paddingTop: 5,
@@ -21,10 +22,10 @@ const BottomTabNavigator = () => {
       }}
     >
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
+        name="Foods"
+        component={FoodsScreen}
         options={{
-          title: 'Trang chủ',
+          title: "Trang chủ",
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Icon name="rocket" size={size} color={color} />
@@ -35,7 +36,8 @@ const BottomTabNavigator = () => {
         name="Orders"
         component={OrdersScreen}
         options={{
-          title: 'Lịch sử',
+          title: "Lịch sử",
+
           tabBarIcon: ({ color, size }) => (
             <Icon name="receipt" size={size} color={color} />
           ),
@@ -45,7 +47,7 @@ const BottomTabNavigator = () => {
         name="Notifications"
         component={NotificationsScreen}
         options={{
-          title: 'Thông báo',
+          title: "Thông báo",
           tabBarIcon: ({ color, size }) => (
             <Icon name="bell" size={size} color={color} />
           ),
@@ -55,7 +57,7 @@ const BottomTabNavigator = () => {
         name="Profile"
         component={ProfileScreen}
         options={{
-          title: 'Tài khoản',
+          title: "Tài khoản",
           tabBarIcon: ({ color, size }) => (
             <Icon name="account" size={size} color={color} />
           ),
@@ -65,4 +67,4 @@ const BottomTabNavigator = () => {
   );
 };
 
-export default BottomTabNavigator; 
+export default BottomTabNavigator;

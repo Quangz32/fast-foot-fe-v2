@@ -1,16 +1,19 @@
-import api from './api';
-import { ENDPOINTS } from '../constants/config';
+import api from "./api";
+import { ENDPOINTS } from "../constants/config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const authService = {
   async login(credentials) {
     try {
       const response = await api.post(ENDPOINTS.LOGIN, credentials);
-      if (response.token) {
-        localStorage.setItem('token', response.token);
+      console.log(response);
+      if (response.accessToken) {
+        await AsyncStorage.setItem("accessToken", response.accessToken);
+        await AsyncStorage.setItem("refreshToken", response.refreshToken);
       }
       return response;
     } catch (error) {
-      throw error.response?.data || { message: 'Đã có lỗi xảy ra' };
+      throw error.response?.data || { message: "Đã có lỗi xảy ra" };
     }
   },
 
@@ -19,11 +22,11 @@ export const authService = {
       const response = await api.post(ENDPOINTS.FORGOT_PASSWORD, { email });
       return response;
     } catch (error) {
-      throw error.response?.data || { message: 'Đã có lỗi xảy ra' };
+      throw error.response?.data || { message: "Đã có lỗi xảy ra" };
     }
   },
 
   logout() {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
   },
-}; 
+};
