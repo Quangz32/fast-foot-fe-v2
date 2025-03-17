@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import Toast from 'react-native-toast-message';
+import { authService } from '../services/auth';
 
 const validationSchema = Yup.object().shape({
     emailOrPhone: Yup.string()
@@ -18,14 +19,35 @@ const validationSchema = Yup.object().shape({
       .min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
   });
 
+  const isEmail = (value) => {
+    return value.includes('@');
+  }
+
+
 const LoginScreen = () => {
-  const handleLogin = (values) => {
-    // Here you would typically make an API call to verify credentials
-    // For demo purposes, we'll just show a success message
-    Toast.show({
-      type: 'success',
-      text1: 'Đăng nhập thành công',
-    });
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = async (values) => {
+    try {
+      setLoading(true);
+      await authService.login({
+        email: isEmail(values.emailOrPhone) ? values.emailOrPhone : null,
+        phone: !isEmail ? null : values.emailOrPhone,
+        password: values.password,
+      });
+      Toast.show({
+        type: 'success',
+        text1: 'Đăng nhập thành công',
+      });
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: error.message || 'Thông tin không đúng',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -56,8 +78,10 @@ const LoginScreen = () => {
               value={values.emailOrPhone}
               onChangeText={handleChange('emailOrPhone')}
               mode="outlined"
+              textColor="black"
               outlineColor="#ddd"
               activeOutlineColor="#ff4d4f"
+              disabled={loading}
             />
             {touched.emailOrPhone && errors.emailOrPhone && (
               <Text style={styles.errorText}>{errors.emailOrPhone}</Text>
@@ -69,17 +93,32 @@ const LoginScreen = () => {
               placeholder="Nhập mật khẩu"
               value={values.password}
               onChangeText={handleChange('password')}
-              secureTextEntry
+              secureTextEntry={!showPassword}
               mode="outlined"
               outlineColor="#ddd"
+              textColor="black"
               activeOutlineColor="#ff4d4f"
-              right={<TextInput.Icon icon="eye" />}
+              disabled={loading}
+              right={
+                <TextInput.Icon
+                  icon={showPassword ? 'eye-off' : 'eye'}
+                  onPress={() => {
+                    setShowPassword(!showPassword); 
+                }}
+                />
+              }
             />
             {touched.password && errors.password && (
               <Text style={styles.errorText}>{errors.password}</Text>
             )}
 
-            <TouchableOpacity style={styles.forgotPassword}>
+            <TouchableOpacity
+              style={styles.forgotPassword}
+              onPress={() => {
+                // Handle forgot password
+              }}
+              disabled={loading}
+            >
               <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
             </TouchableOpacity>
 
@@ -88,6 +127,8 @@ const LoginScreen = () => {
               onPress={handleSubmit}
               style={styles.loginButton}
               labelStyle={styles.loginButtonText}
+              loading={loading}
+              disabled={loading}
             >
               Đăng nhập
             </Button>
@@ -97,7 +138,7 @@ const LoginScreen = () => {
                 Vui lòng liên hệ hotline{' '}
                 <Text style={styles.phoneNumber}>0977854609</Text> nếu bạn cần hỗ
                 trợ.{' '}
-                <TouchableOpacity>
+                <TouchableOpacity disabled={loading}>
                   <Text style={styles.callNowText}>Gọi ngay</Text>
                 </TouchableOpacity>
               </Text>
@@ -106,7 +147,7 @@ const LoginScreen = () => {
             <View style={styles.registerContainer}>
               <Text style={styles.registerText}>
                 Bạn chưa có tài khoản?{' '}
-                <TouchableOpacity>
+                <TouchableOpacity disabled={loading}>
                   <Text style={styles.registerLink}>Đăng ký ngay</Text>
                 </TouchableOpacity>
               </Text>
