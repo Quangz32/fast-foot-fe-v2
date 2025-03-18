@@ -1,18 +1,18 @@
-import axios from 'axios';
-import { API_URL } from '../constants/config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "axios";
+import { API_URL } from "../constants/config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const api = axios.create({
   baseURL: API_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Request interceptor
 api.interceptors.request.use(
   async (config) => {
-    const token = await AsyncStorage.getItem('accessToken');
+    const token = await AsyncStorage.getItem("accessToken");
     console.log(token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -33,4 +33,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api; 
+export default api;

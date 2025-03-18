@@ -8,6 +8,9 @@ export const ENDPOINTS = {
   FORGOT_PASSWORD: '/auth/forgot-password',
 
   CATEGORIES: '/categories',
+
+  FOODS: '/foods',
+  TOP_SELLING_FOODS: '/foods/top-selling',
 };
 
 export const STATUS_CODES = {

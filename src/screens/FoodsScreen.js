@@ -12,6 +12,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { useEffect, useState } from "react";
 import { categoryService } from "../services/categoryService";
+import { foodService } from "../services/foodService";
 
 import { API_URL_IMAGE } from "../constants/config";
 const discountedItems = [
@@ -46,11 +47,11 @@ const discountedItems = [
 const FoodsScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState([]);
-  const [discountedItems, setDiscountedItems] = useState([]);
+  const [topSellingFoods, setTopSellingFoods] = useState([]);
 
   useEffect(() => {
     fetchCategories();
-    // fetchDiscountedItems();
+    fetchTopSellingFoods();
   }, []);
 
   const fetchCategories = async () => {
@@ -63,7 +64,64 @@ const FoodsScreen = ({ navigation }) => {
     }
   };
 
-  const fetchDiscountedItems = async () => {};
+  const fetchTopSellingFoods = async () => {
+    try {
+      const response = await foodService.getTopSellingFoods();
+      console.log(response);
+      setTopSellingFoods(response);
+    } catch (error) {
+      console.error("Error fetching hot selling foods:", error);
+    }
+  };
+
+  const getFoodItemView = (item) => {
+    if (!item.foodDetails) return null;
+    const food = item.foodDetails;
+    const shop = item.shopDetails;
+    const discountPercent = Math.round(
+      ((food.originalPrice - food.price) / food.price) * 100
+    );
+
+    return (
+      <TouchableOpacity key={item.id} style={styles.discountedItem}>
+        <View style={styles.discountBadge}>
+          <Text style={styles.discountText}>- {discountPercent}%</Text>
+        </View>
+        <Image
+          source={{
+            uri: `${API_URL_IMAGE}${food?.image || "/uploads/placeholder.png"}`,
+          }}
+          style={styles.itemImage}
+        />
+        <View style={styles.itemInfo}>
+          <Text style={styles.itemName}>{food.name}</Text>
+          <View style={styles.shop}>
+            <Icon name="chef-hat" size={20} color={"black"} />
+            <Text style={styles.restaurantName}>{shop.name}</Text>
+          </View>
+          <View style={styles.priceContainer}>
+            <Text style={styles.originalPrice}>
+              {food.originalPrice?.toLocaleString()}đ
+            </Text>
+            <Text style={styles.discountedPrice}>
+              {food.price?.toLocaleString()}đ
+            </Text>
+          </View>
+          <View style={styles.itemFooter}>
+            {/* <Text style={styles.deliveryInfo}>
+              {item.time} • {item.distance}
+            </Text> */}
+            {/* {item.isNew && <Text style={styles.newBadge}>Mới ⭐️</Text>} */}
+          </View>
+          {item.isOpen && (
+            <View style={styles.openBadge}>
+              <Text style={styles.openText}>ĐANG MỞ CỬA</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -119,39 +177,9 @@ const FoodsScreen = ({ navigation }) => {
 
       {/* Discounted items */}
       <View style={styles.discountedSection}>
-        <Text style={styles.sectionTitle}>Món đang được giảm giá</Text>
+        <Text style={styles.sectionTitle}>Món hót hòn họt</Text>
         <View style={styles.discountedItems}>
-          {discountedItems.map((item) => (
-            <TouchableOpacity key={item.id} style={styles.discountedItem}>
-              <View style={styles.discountBadge}>
-                <Text style={styles.discountText}>- {item.discount}%</Text>
-              </View>
-              <Image source={item.image} style={styles.itemImage} />
-              <View style={styles.itemInfo}>
-                <Text style={styles.itemName}>{item.name}</Text>
-                <Text style={styles.restaurantName}>{item.restaurant}</Text>
-                <View style={styles.priceContainer}>
-                  <Text style={styles.originalPrice}>
-                    {item.originalPrice.toLocaleString()}đ
-                  </Text>
-                  <Text style={styles.discountedPrice}>
-                    {item.discountedPrice.toLocaleString()}đ
-                  </Text>
-                </View>
-                <View style={styles.itemFooter}>
-                  <Text style={styles.deliveryInfo}>
-                    {item.time} • {item.distance}
-                  </Text>
-                  {item.isNew && <Text style={styles.newBadge}>Mới ⭐️</Text>}
-                </View>
-                {item.isOpen && (
-                  <View style={styles.openBadge}>
-                    <Text style={styles.openText}>ĐANG MỞ CỬA</Text>
-                  </View>
-                )}
-              </View>
-            </TouchableOpacity>
-          ))}
+          {topSellingFoods.map((item) => getFoodItemView(item))}
         </View>
       </View>
     </ScrollView>
@@ -273,10 +301,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  shop: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
   restaurantName: {
     fontSize: 14,
     color: "#666",
     marginTop: 4,
+    marginLeft: 4,
   },
   priceContainer: {
     flexDirection: "row",
