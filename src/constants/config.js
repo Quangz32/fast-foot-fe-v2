@@ -1,24 +1,28 @@
-export const API_URL = 'http://localhost:2003/api';
+export const API_URL = "http://127.0.0.1:2003/api";
 
-export const API_URL_IMAGE = 'http://localhost:2003';
+export const API_URL_IMAGE = "http://127.0.0.1:2003";
 
 export const ENDPOINTS = {
-  LOGIN: '/auth/login',
-  REGISTER: '/auth/register',
-  FORGOT_PASSWORD: '/auth/forgot-password',
+  LOGIN: "/auth/login",
+  REGISTER: "/auth/register",
+  FORGOT_PASSWORD: "/auth/forgot-password",
 
   // Categories
-  CATEGORIES: '/categories',
+  CATEGORIES: "/categories",
 
   // Foods
-  FOODS: '/foods',
-  TOP_SELLING_FOODS: '/foods/top-selling',
+  FOODS: "/foods",
+  TOP_SELLING_FOODS: "/foods/top-selling",
 
   // Shops
 
   //Users
-  USERS: '/users',
-  USER_ME: '/users/me',
+  USERS: "/users",
+  USER_ME: "/users/me",
+
+  //Orders
+  ORDERS: "/orders",
+  ORDER_ITEMS: "/orders/items",
 };
 
 export const STATUS_CODES = {
@@ -27,4 +31,4 @@ export const STATUS_CODES = {
   UNAUTHORIZED: 401,
   NOT_FOUND: 404,
   SERVER_ERROR: 500,
-}; 
+};

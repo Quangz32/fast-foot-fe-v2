@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -15,39 +16,13 @@ import { categoryService } from "../services/categoryService";
 import { foodService } from "../services/foodService";
 
 import { API_URL_IMAGE } from "../constants/config";
-const discountedItems = [
-  {
-    id: 1,
-    name: "Cánh gà",
-    restaurant: "Hi-Chicken",
-    originalPrice: 39000,
-    discountedPrice: 20000,
-    discount: 48.7,
-    image: require("../../assets/products/canh-ga.jpg"),
-    time: "0.2 phút",
-    distance: "0,12km",
-    isNew: true,
-    isOpen: true,
-  },
-  {
-    id: 2,
-    name: "Xúc xích",
-    restaurant: "Hi-Chicken",
-    originalPrice: 15000,
-    discountedPrice: 8000,
-    discount: 46.7,
-    image: require("../../assets/products/xuc-xich.jpg"),
-    time: "0.2 phút",
-    distance: "0,12km",
-    isNew: true,
-    isOpen: true,
-  },
-];
 
 const FoodsScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState([]);
   const [topSellingFoods, setTopSellingFoods] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedFood, setSelectedFood] = useState(null);
 
   useEffect(() => {
     fetchCategories();
@@ -74,6 +49,29 @@ const FoodsScreen = ({ navigation }) => {
     }
   };
 
+  const openModal = (item) => {
+    setSelectedFood(item);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedFood(null);
+  };
+
+  const placeOrder = () => {
+    // Thực hiện đặt hàng ở đây
+    alert(`Đặt hàng thành công món ${selectedFood.foodDetails.name}!`);
+    closeModal();
+  };
+
+  const addToCart = () => {
+    if (selectedFood) {
+      // setCart([...cart, selectedFood]);
+      alert(`${selectedFood.foodDetails.name} đã được thêm vào giỏ hàng!`);
+      closeModal();
+    }
+  };
   const getFoodItemView = (item) => {
     if (!item.foodDetails) return null;
     const food = item.foodDetails;
@@ -83,7 +81,11 @@ const FoodsScreen = ({ navigation }) => {
     );
 
     return (
-      <TouchableOpacity key={item._id} style={styles.discountedItem}>
+      <TouchableOpacity
+        key={item._id}
+        style={styles.discountedItem}
+        onPress={() => openModal(item)}
+      >
         <View style={styles.discountBadge}>
           <Text style={styles.discountText}>- {discountPercent}%</Text>
         </View>
@@ -107,12 +109,18 @@ const FoodsScreen = ({ navigation }) => {
               {food.price?.toLocaleString()}đ
             </Text>
           </View>
-          <View style={styles.itemFooter}>
-            {/* <Text style={styles.deliveryInfo}>
+          {/* <View style={styles.itemFooter}>
+            <Text style={styles.deliveryInfo}>
               {item.time} • {item.distance}
-            </Text> */}
-            {/* {item.isNew && <Text style={styles.newBadge}>Mới ⭐️</Text>} */}
-          </View>
+            </Text>
+            {item.isNew && <Text style={styles.newBadge}>Mới ⭐️</Text>}
+          </View> */}
+          <TouchableOpacity
+            style={styles.addToCartButton}
+            onPress={() => addToCart(item)}
+          >
+            <Text style={styles.addToCartText}>Thêm vào giỏ hàng</Text>
+          </TouchableOpacity>
           {item.isOpen && (
             <View style={styles.openBadge}>
               <Text style={styles.openText}>ĐANG MỞ CỬA</Text>
@@ -182,6 +190,48 @@ const FoodsScreen = ({ navigation }) => {
           {topSellingFoods.map((item) => getFoodItemView(item))}
         </View>
       </View>
+
+      {/* Modal for food options */}
+      {selectedFood && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={closeModal}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Image
+                source={{
+                  uri: `${API_URL_IMAGE}${selectedFood.foodDetails.image}`,
+                }}
+                style={styles.modalImage}
+              />
+              <Text style={styles.modalTitle}>
+                {selectedFood.foodDetails.name}
+              </Text>
+              {/* Thêm các tùy chọn ở đây */}
+              <Text style={styles.modalPrice}>
+                Giá: {selectedFood.foodDetails.price.toLocaleString()}đ
+              </Text>
+              <View style={styles.modalButtons}>
+                <TouchableOpacity style={styles.button} onPress={placeOrder}>
+                  <Text style={styles.buttonText}>Đặt ngay</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={addToCart}>
+                  <Text style={styles.buttonText}>Thêm vào giỏ hàng</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={closeModal}
+                >
+                  <Text style={styles.closeButtonText}>Đóng</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
     </ScrollView>
   );
 };
@@ -334,6 +384,17 @@ const styles = StyleSheet.create({
     marginTop: 8,
     gap: 8,
   },
+  addToCartButton: {
+    backgroundColor: "#ff4d4f",
+    padding: 8,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 8,
+  },
+  addToCartText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
   deliveryInfo: {
     fontSize: 12,
     color: "#666",
@@ -353,6 +414,62 @@ const styles = StyleSheet.create({
   openText: {
     color: "#1890ff",
     fontSize: 12,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: "80%",
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 16,
+    alignItems: "center",
+  },
+  modalImage: {
+    width: "100%",
+    height: 200,
+    borderRadius: 8,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginVertical: 8,
+  },
+  modalPrice: {
+    fontSize: 16,
+    color: "#ff4d4f",
+    marginBottom: 16,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: 8,
+  },
+  button: {
+    flex: 1,
+    backgroundColor: "#ff4d4f",
+    padding: 12,
+    borderRadius: 8,
+    marginHorizontal: 4,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  closeButton: {
+    marginTop: 16,
+    backgroundColor: "#ddd",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  closeButtonText: {
+    color: "#000",
   },
 });
 
