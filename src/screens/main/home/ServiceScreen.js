@@ -11,9 +11,9 @@ import {
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const banners = [
-  require("../../assets/categories/banh-mi.webp"),
-  require("../../assets/categories/tra-sua.webp"),
-  require("../../assets/categories/com.webp"),
+  require("../../../../assets/categories/banh-mi.webp"),
+  require("../../../../assets/categories/tra-sua.webp"),
+  require("../../../../assets/categories/com.webp"),
 ];
 
 const services = [
@@ -55,7 +55,7 @@ const ServiceScreen = ({ navigation }) => {
       {/* Logo */}
       <View style={styles.logoContainer}>
         <Image
-          source={require("../../assets/logo.webp")}
+          source={require("../../../../assets/logo.webp")}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -76,14 +76,22 @@ const ServiceScreen = ({ navigation }) => {
           }}
         >
           {banners.map((banner, index) => (
-            <Image key={index} source={banner} style={styles.banner} resizeMode="cover" />
+            <Image
+              key={index}
+              source={banner}
+              style={styles.banner}
+              resizeMode="cover"
+            />
           ))}
         </ScrollView>
         <View style={styles.pagination}>
           {banners.map((_, index) => (
             <View
               key={index}
-              style={[styles.paginationDot, currentBanner === index && styles.paginationDotActive]}
+              style={[
+                styles.paginationDot,
+                currentBanner === index && styles.paginationDotActive,
+              ]}
             />
           ))}
         </View>

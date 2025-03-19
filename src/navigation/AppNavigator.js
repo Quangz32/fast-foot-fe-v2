@@ -1,6 +1,6 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LoginScreen from "../../src/screens/LoginScreen";
+import LoginScreen from "../screens/auth/LoginScreen";
 import BottomTabNavigator from "../../src/navigation/BottomTabNavigator";
 
 const Stack = createNativeStackNavigator();
@@ -18,7 +18,6 @@ const AppNavigator = () => {
         component={BottomTabNavigator}
         options={{ headerShown: false }}
       />
-      
     </Stack.Navigator>
   );
 };

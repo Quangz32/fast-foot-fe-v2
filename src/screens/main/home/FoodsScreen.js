@@ -12,10 +12,10 @@ import {
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { useEffect, useState } from "react";
-import { categoryService } from "../services/categoryService";
-import { foodService } from "../services/foodService";
+import { categoryService } from "../../../services/categoryService";
+import { foodService } from "../../../services/foodService";
 
-import { API_URL_IMAGE } from "../constants/config";
+import { API_URL_IMAGE } from "../../../constants/config";
 
 const FoodsScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");

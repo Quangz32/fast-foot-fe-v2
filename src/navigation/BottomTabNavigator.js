@@ -1,12 +1,12 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import HomeScreen from "../screens/HomeScreen";
-import ServiceScreen from "../screens/ServiceScreen";
-import FoodsScreen from "../screens/FoodsScreen";
-import OrdersScreen from "../screens/OrdersScreen";
-import NotificationsScreen from "../screens/NotificationsScreen";
-import ProfileScreen from "../screens/ProfileScreen";
+import HomeScreen from "../screens/main/home/HomeScreen";
+import ServiceScreen from "../screens/main/home/ServiceScreen";
+import FoodsScreen from "../screens/main/home/FoodsScreen";
+import OrdersScreen from "../screens/main/order/OrdersScreen";
+import NotificationsScreen from "../screens/main/notification/NotificationsScreen";
+import ProfileScreen from "../screens/main/user/ProfileScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
