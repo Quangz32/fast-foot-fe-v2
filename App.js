@@ -5,6 +5,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import AppNavigator from "./src/navigation/AppNavigator";
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function App() {
   return (
