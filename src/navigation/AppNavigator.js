@@ -8,17 +8,17 @@ const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
   return (
     <Stack.Navigator>
-            <Stack.Screen
-        name="Main"
-        component={BottomTabNavigator}
-        options={{ headerShown: false }}
-      />
       <Stack.Screen
         name="Login"
         component={LoginScreen}
         options={{ headerShown: false }}
       />
-
+      <Stack.Screen
+        name="Main"
+        component={BottomTabNavigator}
+        options={{ headerShown: false }}
+      />
+      
     </Stack.Navigator>
   );
 };

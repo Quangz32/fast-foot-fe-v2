@@ -83,7 +83,7 @@ const FoodsScreen = ({ navigation }) => {
     );
 
     return (
-      <TouchableOpacity key={item.id} style={styles.discountedItem}>
+      <TouchableOpacity key={item._id} style={styles.discountedItem}>
         <View style={styles.discountBadge}>
           <Text style={styles.discountText}>- {discountPercent}%</Text>
         </View>

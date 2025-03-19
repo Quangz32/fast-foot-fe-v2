@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import { Formik } from "formik";
@@ -6,19 +6,15 @@ import * as Yup from "yup";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import { authService } from "../services/auth";
-
+import { userService } from "../services/userService";
 const validationSchema = Yup.object().shape({
   emailOrPhone: Yup.string()
     .required("Vui lòng nhập email hoặc số điện thoại")
-    .test(
-      "is-valid",
-      "Vui lòng nhập đúng định dạng email hoặc số điện thoại",
-      (value) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const phoneRegex = /^0\d{9,10}$/; // Số điện thoại bắt đầu bằng 0 và có từ 10 đến 11 số
-        return emailRegex.test(value) || phoneRegex.test(value);
-      }
-    ),
+    .test("is-valid", "Vui lòng nhập đúng định dạng email hoặc số điện thoại", (value) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phoneRegex = /^0\d{9,10}$/; // Số điện thoại bắt đầu bằng 0 và có từ 10 đến 11 số
+      return emailRegex.test(value) || phoneRegex.test(value);
+    }),
   password: Yup.string()
     .required("Vui lòng nhập mật khẩu")
     .min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
@@ -28,10 +24,23 @@ const isEmail = (value) => {
   return value.includes("@");
 };
 
-const LoginScreen = () => {
-  const navigation = useNavigation();
+const LoginScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    try {
+      userService.getMe().then((res) => {
+        console.log(res);
+        if (res.name) {
+          console.log("200 neee");
+          navigation.navigate("Main");
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [navigation]);
 
   const handleLogin = async (values) => {
     try {
@@ -45,7 +54,7 @@ const LoginScreen = () => {
         type: "success",
         text1: "Đăng nhập thành công",
       });
-      navigation.replace("Main");
+      navigation.navigate("Main");
     } catch (error) {
       Toast.show({
         type: "error",
@@ -141,9 +150,8 @@ const LoginScreen = () => {
 
             <View style={styles.helpContainer}>
               <Text style={styles.helpText}>
-                Vui lòng liên hệ hotline{" "}
-                <Text style={styles.phoneNumber}>0977854609</Text> nếu bạn cần
-                hỗ trợ.{" "}
+                Vui lòng liên hệ hotline <Text style={styles.phoneNumber}>0977854609</Text> nếu bạn
+                cần hỗ trợ.{" "}
                 <TouchableOpacity disabled={loading}>
                   <Text style={styles.callNowText}>Gọi ngay</Text>
                 </TouchableOpacity>

@@ -7,10 +7,18 @@ export const ENDPOINTS = {
   REGISTER: '/auth/register',
   FORGOT_PASSWORD: '/auth/forgot-password',
 
+  // Categories
   CATEGORIES: '/categories',
 
+  // Foods
   FOODS: '/foods',
   TOP_SELLING_FOODS: '/foods/top-selling',
+
+  // Shops
+
+  //Users
+  USERS: '/users',
+  USER_ME: '/users/me',
 };
 
 export const STATUS_CODES = {

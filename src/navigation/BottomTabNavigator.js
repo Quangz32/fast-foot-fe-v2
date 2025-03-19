@@ -2,10 +2,14 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeScreen from "../screens/HomeScreen";
+import ServiceScreen from "../screens/ServiceScreen";
 import FoodsScreen from "../screens/FoodsScreen";
 import OrdersScreen from "../screens/OrdersScreen";
 import NotificationsScreen from "../screens/NotificationsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import { createStackNavigator } from "@react-navigation/stack";
+
+const Stack = createStackNavigator();
 
 const Tab = createBottomTabNavigator();
 
@@ -22,8 +26,8 @@ const BottomTabNavigator = () => {
       }}
     >
       <Tab.Screen
-        name="Foods"
-        component={FoodsScreen}
+        name="Home"
+        component={HomeScreen}
         options={{
           title: "Trang chủ",
           headerShown: false,
