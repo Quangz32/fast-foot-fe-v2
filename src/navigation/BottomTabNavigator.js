@@ -4,6 +4,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeScreen from "../screens/main/home/HomeScreen";
 import ServiceScreen from "../screens/main/home/ServiceScreen";
 import FoodsScreen from "../screens/main/home/FoodsScreen";
+import OrderScreen from "../screens/main/order/OrderScreen";
 import OrdersScreen from "../screens/main/order/OrdersScreen";
 import NotificationsScreen from "../screens/main/notification/NotificationsScreen";
 import ProfileScreen from "../screens/main/user/ProfileScreen";
@@ -38,9 +39,9 @@ const BottomTabNavigator = () => {
       />
       <Tab.Screen
         name="Orders"
-        component={OrdersScreen}
+        component={OrderScreen}
         options={{
-          title: "Lịch sử",
+          title: "Đơn hàng",
 
           tabBarIcon: ({ color, size }) => (
             <Icon name="receipt" size={size} color={color} />

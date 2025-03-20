@@ -15,7 +15,7 @@ import { foodService } from "../../../services/foodService";
 import FoodItem from "./FoodItem"; // Import FoodItem
 import FoodModal from "./FoodModal"; // Import FoodModal
 import { API_URL_IMAGE } from "../../../constants/config";
-
+import { orderService } from "../../../services/orderService";
 const FoodsScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState([]);
@@ -26,7 +26,13 @@ const FoodsScreen = ({ navigation }) => {
   useEffect(() => {
     fetchCategories();
     fetchTopSellingFoods();
+    fetchOrders();
   }, []);
+
+  const fetchOrders = async () => {
+    const orders = await orderService.getOrders();
+    console.log("orders", orders);
+  };
 
   const fetchCategories = async () => {
     try {
@@ -141,6 +147,7 @@ const FoodsScreen = ({ navigation }) => {
         visible={modalVisible}
         food={selectedFood}
         onClose={closeModal}
+        // onAddToCart={addToCart}
         onPlaceOrder={placeOrder}
       />
     </ScrollView>
