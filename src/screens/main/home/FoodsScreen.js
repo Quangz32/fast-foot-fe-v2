@@ -31,6 +31,7 @@ const FoodsScreen = ({ navigation }) => {
   const fetchCategories = async () => {
     try {
       const response = await categoryService.getCategories();
+      console.log("categories", response);
       setCategories(response);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -40,6 +41,7 @@ const FoodsScreen = ({ navigation }) => {
   const fetchTopSellingFoods = async () => {
     try {
       const response = await foodService.getTopSellingFoods();
+      console.log("selling foods", response);
       setTopSellingFoods(response);
     } catch (error) {
       console.error("Error fetching hot selling foods:", error);
@@ -61,12 +63,12 @@ const FoodsScreen = ({ navigation }) => {
     closeModal();
   };
 
-  const addToCart = () => {
-    if (selectedFood) {
-      alert(`${selectedFood.foodDetails.name} đã được thêm vào giỏ hàng!`);
-      closeModal();
-    }
-  };
+  // const addToCart = () => {
+  //   if (selectedFood) {
+  //     alert(`${selectedFood.foodDetails.name} đã được thêm vào giỏ hàng!`);
+  //     closeModal();
+  //   }
+  // };
 
   return (
     <ScrollView style={styles.container}>
@@ -139,7 +141,6 @@ const FoodsScreen = ({ navigation }) => {
         visible={modalVisible}
         food={selectedFood}
         onClose={closeModal}
-        onAddToCart={addToCart}
         onPlaceOrder={placeOrder}
       />
     </ScrollView>
