@@ -7,7 +7,7 @@ const OrderItem = ({ order }) => {
   console.log("order in OrderItem", order);
   const canPlace = order.status === "creating";
   console.log("canPlace", canPlace);
-  const canCancel = ["creating", "confirmed", "preparing"].includes(
+  const canCancel = ["creating", "placed", "preparing"].includes(
     order.status
   );
   const canReceive = order.status === "delivered";

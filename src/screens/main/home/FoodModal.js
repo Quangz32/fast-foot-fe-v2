@@ -13,7 +13,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { API_URL_IMAGE } from "../../../constants/config";
 import { orderService } from "../../../services/orderService";
 
-const FoodModal = ({ visible, food, onClose, onPlaceOrder }) => {
+const FoodModal = ({ visible, food, onClose, onPlaceOrder, showToast }) => {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [totalPrice, setTotalPrice] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -102,6 +102,10 @@ const FoodModal = ({ visible, food, onClose, onPlaceOrder }) => {
     const res = await orderService.createOrderItem(requestBody);
     console.log("res", res);
 
+    //Show toast
+    showToast("Thêm vào giỏ hàng thành công", "success");
+
+    //chờ 1 giây
     onClose();
   };
 

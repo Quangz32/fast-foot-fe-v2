@@ -8,6 +8,8 @@ import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function App() {
+  // delete token in async storage
+  // AsyncStorage.removeItem("accessToken");
   return (
     <NavigationContainer>
       <SafeAreaProvider>

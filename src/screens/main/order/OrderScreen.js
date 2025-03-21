@@ -13,7 +13,7 @@ import { orderService } from "../../../services/orderService";
 
 const ORDER_STATUSES = [
   { id: "creating", label: "Chờ đặt hàng", icon: "clock-outline" },
-  { id: "confirmed", label: "Đã đặt", icon: "check-circle-outline" },
+  { id: "placed", label: "Đã đặt", icon: "check-circle-outline" },
   { id: "preparing", label: "Đang chuẩn bị", icon: "food" },
   { id: "delivering", label: "Đang giao", icon: "truck-delivery" },
   { id: "delivered", label: "Đã giao", icon: "package-variant" },
@@ -21,10 +21,17 @@ const ORDER_STATUSES = [
   { id: "cancelled", label: "Đã huỷ", icon: "close-circle" },
 ];
 
-const OrderScreen = () => {
+const OrderScreen = ({ navigation }) => {
   const [selectedStatus, setSelectedStatus] = useState("creating");
   const [orders, setOrders] = useState([]);
   const [statusCounts, setStatusCounts] = useState({});
+
+  useEffect(() => {
+    return navigation.addListener("focus", () => {
+      // Tab được focus => cập nhật dữ liệu hoặc render lại
+      fetchOrders();
+    });
+  }, [navigation]);
 
   useEffect(() => {
     fetchOrders();
@@ -54,7 +61,6 @@ const OrderScreen = () => {
   const filteredOrders = orders?.filter(
     (order) => order.status === selectedStatus
   );
-
 
   return (
     <View style={styles.container}>
@@ -99,11 +105,7 @@ const OrderScreen = () => {
       <FlatList
         data={filteredOrders}
         keyExtractor={(item) => item._id}
-        renderItem={({ item }) => (
-          <OrderItem
-            order={item}
-          />
-        )}
+        renderItem={({ item }) => <OrderItem order={item} />}
         contentContainerStyle={styles.ordersList}
       />
     </View>

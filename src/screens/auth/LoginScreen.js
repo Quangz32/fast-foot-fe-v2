@@ -58,7 +58,11 @@ const LoginScreen = ({ navigation }) => {
         type: "success",
         text1: "Đăng nhập thành công",
       });
-      navigation.navigate("Main");
+
+      //chờ 1 giây
+      setTimeout(() => {
+        navigation.navigate("Main");
+      }, 750);
     } catch (error) {
       Toast.show({
         type: "error",

@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { categoryService } from "../../../services/categoryService";
 import { foodService } from "../../../services/foodService";
@@ -69,12 +70,12 @@ const FoodsScreen = ({ navigation }) => {
     closeModal();
   };
 
-  // const addToCart = () => {
-  //   if (selectedFood) {
-  //     alert(`${selectedFood.foodDetails.name} đã được thêm vào giỏ hàng!`);
-  //     closeModal();
-  //   }
-  // };
+  const showToast = (message, type) => {
+    Toast.show({
+      text1: "Thêm vào giỏ hàng thành công",
+      type: "success",
+    });
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -148,8 +149,10 @@ const FoodsScreen = ({ navigation }) => {
         food={selectedFood}
         onClose={closeModal}
         // onAddToCart={addToCart}
+        showToast={showToast}
         onPlaceOrder={placeOrder}
       />
+      <Toast />
     </ScrollView>
   );
 };
