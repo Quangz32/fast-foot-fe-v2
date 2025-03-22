@@ -27,7 +27,7 @@ const services = [
     id: 2,
     name: "Đặt đồ ăn",
     icon: "food",
-    screen: "Foods",
+    screen: "Recommend",
   },
   {
     id: 3,

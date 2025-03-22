@@ -17,7 +17,7 @@ import FoodItem from "./FoodItem"; // Import FoodItem
 import FoodModal from "./FoodModal"; // Import FoodModal
 import { API_URL_IMAGE } from "../../../constants/config";
 import { orderService } from "../../../services/orderService";
-const FoodsScreen = ({ navigation }) => {
+const FoodRecommendScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState([]);
   const [topSellingFoods, setTopSellingFoods] = useState([]);
@@ -129,17 +129,21 @@ const FoodsScreen = ({ navigation }) => {
         </View>
       </View>
 
-      {/* Discounted items */}
+      {/* Top Selling items */}
       <View style={styles.discountedSection}>
         <Text style={styles.sectionTitle}>Món hót hòn họt</Text>
         <View style={styles.discountedItems}>
-          {topSellingFoods.map((item) => (
-            <FoodItem
-              key={item._id}
-              item={item}
-              onPress={() => openModal(item)}
-            />
-          ))}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={{ flexDirection: "row", gap: 15 }}>
+              {topSellingFoods.map((item) => (
+                <FoodItem
+                  key={item._id}
+                  item={item}
+                  onPress={() => openModal(item)}
+                />
+              ))}
+            </View>
+          </ScrollView>
         </View>
       </View>
 
@@ -243,4 +247,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FoodsScreen;
+export default FoodRecommendScreen;

@@ -3,8 +3,9 @@ import { View, Text, StyleSheet } from "react-native";
 
 import { createStackNavigator } from "@react-navigation/stack";
 import ServiceScreen from "./ServiceScreen";
-import FoodsScreen from "./FoodsScreen";
+import RecommendScreen from "./FoodRecommendScreen";
 import FoodDetailScreen from "./FoodDetailScreen";
+
 import { useNavigation } from "@react-navigation/native";
 const Stack = createStackNavigator();
 const HomeScreen = () => {
@@ -16,8 +17,8 @@ const HomeScreen = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Foods"
-        component={FoodsScreen}
+        name="Recommend"
+        component={RecommendScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
