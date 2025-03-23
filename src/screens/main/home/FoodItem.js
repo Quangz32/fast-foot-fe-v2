@@ -4,9 +4,14 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { API_URL_IMAGE } from "../../../constants/config";
 
+/*
+  item : _id, name, image, originalPrice, price,options, shop, 
+*/
+
 const FoodItem = ({ item, onPress }) => {
-  const food = item.foodDetails;
-  const shop = item.shopDetails;
+  // console.log("item", item);
+  const food = item;
+  const shop = item.shop;
   const discountPercent = Math.round(
     ((food.originalPrice - food.price) / food.price) * 100
   );
@@ -26,7 +31,7 @@ const FoodItem = ({ item, onPress }) => {
         <Text style={styles.itemName}>{food.name}</Text>
         <View style={styles.shop}>
           <Icon name="chef-hat" size={20} color={"black"} />
-          <Text style={styles.restaurantName}>{shop.name}</Text>
+          <Text style={styles.restaurantName}>{shop.shopName}</Text>
         </View>
         <View style={styles.priceContainer}>
           <Text style={styles.originalPrice}>

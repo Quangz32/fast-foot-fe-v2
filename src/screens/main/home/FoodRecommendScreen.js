@@ -48,8 +48,17 @@ const FoodRecommendScreen = ({ navigation }) => {
   const fetchTopSellingFoods = async () => {
     try {
       const response = await foodService.getTopSellingFoods();
-      console.log("selling foods", response);
-      setTopSellingFoods(response);
+      const topSellingFoods = response.map((item) => ({
+        _id: item._id,
+        name: item.foodDetails.name,
+        image: item.foodDetails.image,
+        originalPrice: item.foodDetails.originalPrice,
+        price: item.foodDetails.price,
+        shop: item.shopDetails,
+        options: item.foodDetails.options,
+      }));
+      console.log("top selling foods", topSellingFoods);
+      setTopSellingFoods(topSellingFoods);
     } catch (error) {
       console.error("Error fetching hot selling foods:", error);
     }
@@ -106,6 +115,13 @@ const FoodRecommendScreen = ({ navigation }) => {
           style={styles.searchInput}
           placeholder="Bạn muốn ăn gì hôm nay?"
           placeholderTextColor="#999"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onSubmitEditing={() => {
+            if (searchQuery.trim()) {
+              navigation.navigate("Foods", { searchQuery: searchQuery.trim() });
+            }
+          }}
         />
       </View>
 
@@ -116,7 +132,9 @@ const FoodRecommendScreen = ({ navigation }) => {
             <TouchableOpacity
               key={category._id}
               style={styles.categoryItem}
-              onPress={() => {}}
+              onPress={() =>
+                navigation.navigate("Foods", { categoryId: category._id })
+              }
             >
               <Image
                 source={{ uri: `${API_URL_IMAGE}${category.image}` }}

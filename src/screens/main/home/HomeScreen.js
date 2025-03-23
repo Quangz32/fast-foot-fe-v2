@@ -5,6 +5,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import ServiceScreen from "./ServiceScreen";
 import RecommendScreen from "./FoodRecommendScreen";
 import FoodDetailScreen from "./FoodDetailScreen";
+import FoodsScreen from "./FoodsScreen";
 
 import { useNavigation } from "@react-navigation/native";
 const Stack = createStackNavigator();
@@ -19,6 +20,11 @@ const HomeScreen = () => {
       <Stack.Screen
         name="Recommend"
         component={RecommendScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Foods"
+        component={FoodsScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

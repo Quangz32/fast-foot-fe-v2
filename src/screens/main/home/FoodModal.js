@@ -22,7 +22,7 @@ const FoodModal = ({ visible, food, onClose, onPlaceOrder, showToast }) => {
     if (food) {
       // Initialize selected options with the first value of each option
       const initialOptions = {};
-      food.foodDetails.options?.forEach((option) => {
+      food.options?.forEach((option) => {
         if (option.values.length > 0) {
           initialOptions[option._id] = option.values[0]._id;
         }
@@ -34,13 +34,11 @@ const FoodModal = ({ visible, food, onClose, onPlaceOrder, showToast }) => {
 
   useEffect(() => {
     if (food) {
-      let price = food.foodDetails.price;
+      let price = food.price;
 
       // Add price differences from selected options
       Object.entries(selectedOptions).forEach(([optionId, valueId]) => {
-        const option = food.foodDetails.options.find(
-          (opt) => opt._id === optionId
-        );
+        const option = food.options.find((opt) => opt._id === optionId);
         if (option) {
           const selectedValue = option.values.find(
             (val) => val._id === valueId
@@ -74,9 +72,7 @@ const FoodModal = ({ visible, food, onClose, onPlaceOrder, showToast }) => {
   const handleAddToCart = async () => {
     const options = Object.entries(selectedOptions)
       .map(([optionId, valueId]) => {
-        const option = food.foodDetails.options.find(
-          (opt) => opt._id === optionId
-        );
+        const option = food.options.find((opt) => opt._id === optionId);
         if (option) {
           const selectedValue = option.values.find(
             (val) => val._id === valueId
@@ -93,7 +89,7 @@ const FoodModal = ({ visible, food, onClose, onPlaceOrder, showToast }) => {
       .filter(Boolean);
 
     const requestBody = {
-      foodId: food.foodDetails._id,
+      foodId: food._id,
       options: options,
       quantity: quantity,
     };
@@ -120,17 +116,15 @@ const FoodModal = ({ visible, food, onClose, onPlaceOrder, showToast }) => {
         <View style={styles.modalContent}>
           <ScrollView style={styles.scrollView}>
             <Image
-              source={{ uri: `${API_URL_IMAGE}${food.foodDetails.image}` }}
+              source={{ uri: `${API_URL_IMAGE}${food.image}` }}
               style={styles.modalImage}
             />
             <View style={styles.contentContainer}>
-              <Text style={styles.modalTitle}>{food.foodDetails.name}</Text>
-              <Text style={styles.modalDescription}>
-                {food.foodDetails.description}
-              </Text>
+              <Text style={styles.modalTitle}>{food.name}</Text>
+              <Text style={styles.modalDescription}>{food.description}</Text>
 
               {/* Options Selection */}
-              {food.foodDetails.options?.map((option) => (
+              {food.options?.map((option) => (
                 <View key={option._id} style={styles.optionContainer}>
                   <Text style={styles.optionTitle}>{option.name}</Text>
                   <View style={styles.optionValues}>
