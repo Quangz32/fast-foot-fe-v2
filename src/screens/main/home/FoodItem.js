@@ -12,8 +12,9 @@ const FoodItem = ({ item, onPress }) => {
   // console.log("item", item);
   const food = item;
   const shop = item.shop;
+
   const discountPercent = Math.round(
-    ((food.originalPrice - food.price) / food.price) * 100
+    (1 - food.price / food.originalPrice) * 100
   );
 
   return (

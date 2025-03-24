@@ -114,7 +114,7 @@ const OrderScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
     backgroundColor: "#f5f5f5",
   },
   statusTabsContainer: {
@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     marginHorizontal: 4,
+    marginBottom: 16,
     borderRadius: 16,
     backgroundColor: "#f5f5f5",
     flexDirection: "row",

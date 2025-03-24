@@ -4,12 +4,10 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { API_URL_IMAGE } from "../../../constants/config";
 
 const OrderItem = ({ order }) => {
-  console.log("order in OrderItem", order);
+  // console.log("order in OrderItem", order);
   const canPlace = order.status === "creating";
-  console.log("canPlace", canPlace);
-  const canCancel = ["creating", "placed", "preparing"].includes(
-    order.status
-  );
+  // console.log("canPlace", canPlace);
+  const canCancel = ["creating", "placed", "preparing"].includes(order.status);
   const canReceive = order.status === "delivered";
   const canRate = order.status === "completed";
 

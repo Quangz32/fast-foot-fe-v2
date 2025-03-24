@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
   Text,
@@ -45,9 +46,28 @@ const services = [
 
 const ServiceScreen = ({ navigation }) => {
   const [currentBanner, setCurrentBanner] = useState(0);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const fetchUser = async () => {
+    const userJSON = await AsyncStorage.getItem("user");
+    console.log(JSON.parse(userJSON));
+    setUser(JSON.parse(userJSON));
+  };
 
   const handleServicePress = (screen) => {
     navigation.navigate(screen);
+  };
+
+  const handleRegisterButtonPress = () => {
+    if (user?.shopId) {
+      navigation.navigate("ShopManagement");
+    } else {
+      navigation.navigate("ShopRegistration");
+    }
   };
 
   return (
@@ -127,8 +147,10 @@ const ServiceScreen = ({ navigation }) => {
       </View>
 
       {/* Register Button */}
-      <TouchableOpacity style={styles.registerButton}>
-        <Text style={styles.registerButtonText}>ĐĂNG KÝ BÁN HÀNG</Text>
+      <TouchableOpacity style={styles.registerButton} onPress={handleRegisterButtonPress}>
+        <Text style={styles.registerButtonText}>
+          {user?.shopId ? "QUẢN LÍ CỬA HÀNG" : "ĐĂNG KÝ BÁN HÀNG"}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );

@@ -229,6 +229,7 @@ const FoodsScreen = ({ navigation, route }) => {
           </View>
         )}
         contentContainerStyle={styles.foodList}
+        numColumns={2}
       />
 
       <FoodModal
@@ -325,11 +326,11 @@ const styles = StyleSheet.create({
   activeSortButtonText: {
     color: "#fff",
   },
-  foodList: {
-    padding: 16,
-  },
+  foodList: {},
   foodItemContainer: {
-    marginBottom: 16,
+    // width: "50%",
+    marginHorizontal: 6,
+    marginVertical: 6,
   },
 });
 

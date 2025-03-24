@@ -37,7 +37,6 @@ const LoginScreen = ({ navigation }) => {
       userService.getMe().then((res) => {
         console.log(res);
         if (res.name) {
-          console.log("200 neee");
           navigation.navigate("Main");
         }
       });
@@ -54,6 +53,7 @@ const LoginScreen = ({ navigation }) => {
         phone: !isEmail ? null : values.emailOrPhone,
         password: values.password,
       });
+      userService.getMe();
       Toast.show({
         type: "success",
         text1: "Đăng nhập thành công",
