@@ -21,7 +21,7 @@ const AppNavigator = () => {
         options={{ headerShown: false }}
       />
 
-      <Stack.Screen
+      {/* <Stack.Screen
         name="ShopRegistration"
         component={ShopRegistrationScreen}
         options={{
@@ -36,7 +36,7 @@ const AppNavigator = () => {
           title: "Quản lý shop",
           headerShown: true,
         }}
-      />
+      /> */}
     </Stack.Navigator>
   );
 };

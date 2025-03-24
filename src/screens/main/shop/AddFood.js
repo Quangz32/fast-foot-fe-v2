@@ -15,6 +15,7 @@ import { categoryService } from "../../../services/categoryService";
 import { foodService } from "../../../services/foodService";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 const AddFood = ({ onCancel, editingFood }) => {
   const [formData, setFormData] = useState({
     name: "",
@@ -48,7 +49,14 @@ const AddFood = ({ onCancel, editingFood }) => {
           },
         ],
       });
-      setImage(editingFood.image);
+      if (editingFood.image) {
+        setImage({
+          uri: editingFood.image,
+          base64: null, // We don't have base64 for existing images
+        });
+      } else {
+        setImage(null);
+      }
     } else {
       // Reset form when not editing
       setFormData({
@@ -84,10 +92,14 @@ const AddFood = ({ onCancel, editingFood }) => {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
+      base64: true,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setImage({
+        uri: result.assets[0].uri,
+        base64: result.assets[0].base64,
+      });
     }
   };
 
@@ -131,64 +143,46 @@ const AddFood = ({ onCancel, editingFood }) => {
 
   const handleSubmit = async () => {
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("description", formData.description);
-      formDataToSend.append("price", formData.price);
-      formDataToSend.append("originalPrice", formData.originalPrice);
-      formDataToSend.append("categoryId", formData.categoryId);
-      formDataToSend.append("optionsJSON", JSON.stringify(formData.options));
+      // Create the request body
+      const requestBody = {
+        name: formData.name,
+        description: formData.description,
+        price: formData.price,
+        originalPrice: formData.originalPrice,
+        categoryId: formData.categoryId,
+        optionsJSON: JSON.stringify(formData.options),
+      };
 
-      // Thêm tệp hình ảnh nếu có
-      if (image) {
-        const imageUri = image; // URI của hình ảnh từ `expo-image-picker`
-        const filename = imageUri.split("/").pop(); // Lấy tên tệp
-        const match = /\.(\w+)$/.exec(filename); // Xác định loại tệp từ phần mở rộng
-        const type = match ? `image/${match[1]}` : `image`;
+      // Add base64 image if exists
+      if (image && image.base64) {
+        requestBody.imageBase64 = image.base64;
+      }
 
-        const response = await fetch(imageUri); // Fetch blob từ URI
-        const blob = await response.blob();
-
-        formDataToSend.append("image", {
-          uri: imageUri, // Đường dẫn URI
-          name: filename, // Tên tệp
-          type: type, // Loại tệp (ví dụ: image/jpeg)
+      let response;
+      if (editingFood) {
+        // Update existing food
+        response = await foodService.updateFood(editingFood._id, requestBody);
+        Toast.show({
+          type: "success",
+          text1: "Cập nhật món ăn thành công",
+        });
+      } else {
+        // Create new food
+        response = await foodService.createFood(requestBody);
+        Toast.show({
+          type: "success",
+          text1: "Thêm món ăn thành công",
         });
       }
 
-      // Gửi request bằng fetch
-      const token = await AsyncStorage.getItem("accessToken");
-      console.log("tokenZZZ");
-      const response = await fetch("http://127.0.0.1:2003/api/foods", {
-        method: "POST",
-        headers: {
-          Authorization: "Bearer " + token, // Thay YOUR_ACCESS_TOKEN bằng token thực tế
-          // Không thiết lập Content-Type ở đây
-        },
-        body: formDataToSend, // Gửi FormData
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        console.log("Upload thành công:", result);
-        Alert.alert(
-          "Success",
-          editingFood
-            ? "Food item updated successfully!"
-            : "Food item created successfully!"
-        );
-      } else {
-        console.error("Upload thất bại:", result);
-        Alert.alert("Error", result.message || "Failed to upload food item.");
-      }
-
-      onCancel(); // Đóng form sau khi thành công
+      onCancel(); // Close form after success
     } catch (error) {
       console.error("Error submitting form:", error);
-      Alert.alert(
-        "Error",
-        error.response?.data?.message || "Something went wrong"
-      );
+      Toast.show({
+        type: "error",
+        text1: "Có lỗi xảy ra",
+        text2: error.response?.data?.message || "Vui lòng thử lại sau",
+      });
     }
   };
 
@@ -267,7 +261,7 @@ const AddFood = ({ onCancel, editingFood }) => {
             </Text>
           </TouchableOpacity>
           {image && (
-            <Image source={{ uri: image }} style={styles.previewImage} />
+            <Image source={{ uri: image.uri }} style={styles.previewImage} />
           )}
 
           <Text style={styles.label}>Options</Text>
@@ -351,6 +345,7 @@ const AddFood = ({ onCancel, editingFood }) => {
           </TouchableOpacity>
         </View>
       </View>
+      <Toast />
     </ScrollView>
   );
 };
