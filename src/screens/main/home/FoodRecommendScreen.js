@@ -151,7 +151,7 @@ const FoodRecommendScreen = ({ navigation }) => {
       <View style={styles.discountedSection}>
         <Text style={styles.sectionTitle}>Món hót hòn họt</Text>
         <View style={styles.discountedItems}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={true}>
             <View style={{ flexDirection: "row", gap: 15 }}>
               {topSellingFoods.map((item) => (
                 <FoodItem

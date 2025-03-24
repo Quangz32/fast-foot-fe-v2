@@ -1,15 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { API_URL_IMAGE } from "../../../constants/config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { orderService } from "../../../services/orderService";
 
-const OrderItem = ({ order }) => {
-  // console.log("order in OrderItem", order);
-  const canPlace = order.status === "creating";
-  // console.log("canPlace", canPlace);
-  const canCancel = ["creating", "placed", "preparing"].includes(order.status);
-  const canReceive = order.status === "delivered";
-  const canRate = order.status === "completed";
+const OrderItem = ({ order, fetchOrders }) => {
+  console.log(order);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await AsyncStorage.getItem("user");
+      setUser(JSON.parse(user));
+    };
+    fetchUser();
+  }, []);
+
+  const isCustomer = user?._id === order?.customerId;
+  const isShop = user?._id === order?.shopId.userId;
+
+  const canPlace = isCustomer && order.status === "creating";
+  const canConfirm = isShop && order.status === "placed";
+  const canCancel =
+    (isCustomer &&
+      ["creating", "placed", "preparing"].includes(order.status)) ||
+    (isShop && ["placed", "preparing", "delivering"].includes(order.status));
+  const canDeliver = isShop && order.status === "preparing";
+  const canDelivered = isShop && order.status === "delivering";
+  const canReceive = isCustomer && order.status === "delivered";
+  const canRate = isCustomer && order.status === "received";
 
   // Calculate total price for each item including options
   const items = order.items.map((item) => {
@@ -23,6 +43,23 @@ const OrderItem = ({ order }) => {
       totalPrice,
     };
   });
+
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      if (isCustomer && ["placed", "received", "cancelled"].includes(status)) {
+        await orderService.updateOrderStatusByCustomer(orderId, status);
+      } else if (
+        isShop &&
+        ["preparing", "delivering", "delivered", "cancelled"].includes(status)
+      ) {
+        await orderService.updateOrderStatusByShop(orderId, status);
+      }
+
+      fetchOrders();
+    } catch (error) {
+      console.error("Error updating order status:", error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -76,26 +113,63 @@ const OrderItem = ({ order }) => {
           <TouchableOpacity
             style={[styles.actionButton, styles.placeButton]}
             onPress={() => {
+              updateOrderStatus(order._id, "placed");
               console.log("Place order:", order._id);
             }}
           >
             <Text style={styles.actionButtonText}>Đặt hàng</Text>
           </TouchableOpacity>
         )}
+
+        {canConfirm && (
+          <TouchableOpacity
+            style={[styles.actionButton, styles.confirmButton]}
+            onPress={() => {
+              updateOrderStatus(order._id, "preparing");
+              console.log("Confirm order:", order._id);
+            }}
+          >
+            <Text style={styles.actionButtonText}>Xác nhận</Text>
+          </TouchableOpacity>
+        )}
         {canCancel && (
           <TouchableOpacity
             style={[styles.actionButton, styles.cancelButton]}
             onPress={() => {
+              updateOrderStatus(order._id, "cancelled");
               console.log("Cancel order:", order._id);
             }}
           >
             <Text style={styles.cancelButtonText}>Huỷ đơn</Text>
           </TouchableOpacity>
         )}
+        {canDeliver && (
+          <TouchableOpacity
+            style={[styles.actionButton, styles.deliverButton]}
+            onPress={() => {
+              updateOrderStatus(order._id, "delivering");
+              console.log("Deliver order:", order._id);
+            }}
+          >
+            <Text style={styles.actionButtonText}>Giao hàng</Text>
+          </TouchableOpacity>
+        )}
+        {canDelivered && (
+          <TouchableOpacity
+            style={[styles.actionButton, styles.deliveredButton]}
+            onPress={() => {
+              updateOrderStatus(order._id, "delivered");
+              console.log("Mark as delivered:", order._id);
+            }}
+          >
+            <Text style={styles.actionButtonText}>Đã giao</Text>
+          </TouchableOpacity>
+        )}
         {canReceive && (
           <TouchableOpacity
             style={[styles.actionButton, styles.receiveButton]}
             onPress={() => {
+              updateOrderStatus(order._id, "received");
               console.log("Receive order:", order._id);
             }}
           >
@@ -224,8 +298,17 @@ const styles = StyleSheet.create({
   placeButton: {
     backgroundColor: "#ff4d4f",
   },
+  confirmButton: {
+    backgroundColor: "#4CAF50", // Green for confirm
+  },
   cancelButton: {
     backgroundColor: "#f5f5f5",
+  },
+  deliverButton: {
+    backgroundColor: "#2196F3", // Blue for deliver
+  },
+  deliveredButton: {
+    backgroundColor: "#ff9800", // Orange for delivered
   },
   receiveButton: {
     backgroundColor: "#ff4d4f",

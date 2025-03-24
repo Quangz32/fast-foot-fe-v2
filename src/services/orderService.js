@@ -20,11 +20,28 @@ export const orderService = {
     }
   },
 
-  async updateOrderStatus(orderId, status) {
+  async updateOrderStatusByCustomer(orderId, status) {
     try {
-      const res = await api.patch(`${ENDPOINTS.ORDERS}/${orderId}/status`, {
-        status,
-      });
+      const res = await api.post(
+        `http://localhost:2003/api/orders/${orderId}/update_status_by_customer`,
+        {
+          status: status,
+        }
+      );
+      return res.data;
+    } catch (error) {
+      throw error.response?.data || { message: "Đã có lỗi xảy ra" };
+    }
+  },
+
+  async updateOrderStatusByShop(orderId, status) {
+    try {
+      const res = await api.post(
+        `http://localhost:2003/api/orders/${orderId}/update_status_by_shop`,
+        {
+          status: status,
+        }
+      );
       return res.data;
     } catch (error) {
       throw error.response?.data || { message: "Đã có lỗi xảy ra" };

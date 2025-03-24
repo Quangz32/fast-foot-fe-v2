@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import OrderItem from "./OrderItem";
+
 import { orderService } from "../../../services/orderService";
 
 const ORDER_STATUSES = [
@@ -17,7 +18,7 @@ const ORDER_STATUSES = [
   { id: "preparing", label: "Đang chuẩn bị", icon: "food" },
   { id: "delivering", label: "Đang giao", icon: "truck-delivery" },
   { id: "delivered", label: "Đã giao", icon: "package-variant" },
-  { id: "completed", label: "Đã nhận", icon: "check-circle" },
+  { id: "received", label: "Đã nhận", icon: "check-circle" },
   { id: "cancelled", label: "Đã huỷ", icon: "close-circle" },
 ];
 
@@ -39,6 +40,7 @@ const OrderScreen = ({ navigation }) => {
   const fetchOrders = async () => {
     try {
       const response = await orderService.getOrders();
+      console.log(response);
       setOrders(response);
       const counts = {};
       response.forEach((order) => {
@@ -105,7 +107,9 @@ const OrderScreen = ({ navigation }) => {
       <FlatList
         data={filteredOrders}
         keyExtractor={(item) => item._id}
-        renderItem={({ item }) => <OrderItem order={item} />}
+        renderItem={({ item }) => (
+          <OrderItem order={item} fetchOrders={fetchOrders} />
+        )}
         contentContainerStyle={styles.ordersList}
         showsVerticalScrollIndicator={true} // Hiện thanh cuộn dọc
         style={styles.flatList}

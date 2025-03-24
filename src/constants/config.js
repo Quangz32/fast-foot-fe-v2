@@ -17,7 +17,6 @@ export const ENDPOINTS = {
   // Shops
   SHOPS: "/shops",
   SHOP_REGISTER: "/shops/register",
-  
 
   //Users
   USERS: "/users",
@@ -26,6 +25,7 @@ export const ENDPOINTS = {
   //Orders
   ORDERS: "/orders",
   ORDER_ITEMS: "/orders/items",
+  // ORDER_STATUS: "/orders/status",
 };
 
 export const STATUS_CODES = {
