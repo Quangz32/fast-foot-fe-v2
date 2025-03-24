@@ -57,7 +57,7 @@ const FoodsScreen = ({ navigation, route }) => {
         queryParams.append("sortBy", sortBy);
       }
       if (searchQuery) {
-        queryParams.append("search", searchQuery);
+        queryParams.append("name", searchQuery);
       }
 
       const response = await foodService.getFoods(queryParams.toString());

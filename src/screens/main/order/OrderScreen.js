@@ -28,7 +28,6 @@ const OrderScreen = ({ navigation }) => {
 
   useEffect(() => {
     return navigation.addListener("focus", () => {
-      // Tab được focus => cập nhật dữ liệu hoặc render lại
       fetchOrders();
     });
   }, [navigation]);
@@ -40,10 +39,7 @@ const OrderScreen = ({ navigation }) => {
   const fetchOrders = async () => {
     try {
       const response = await orderService.getOrders();
-      console.log("response", response);
-
       setOrders(response);
-      // Calculate counts for each status
       const counts = {};
       response.forEach((order) => {
         counts[order.status] = (counts[order.status] || 0) + 1;
@@ -65,41 +61,45 @@ const OrderScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {/* Status Tabs */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={true}
-        style={styles.statusTabsContainer}
-      >
-        {ORDER_STATUSES.map((status) => (
-          <TouchableOpacity
-            key={status.id}
-            style={[
-              styles.statusTab,
-              selectedStatus === status.id && styles.selectedStatusTab,
-            ]}
-            onPress={() => handleStatusChange(status.id)}
-          >
-            <Icon
-              name={status.icon}
-              size={24}
-              color={selectedStatus === status.id ? "#ff4d4f" : "#666"}
-            />
-            <Text
+      <View style={styles.statusTabsContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false} // Không hiển thị thanh cuộn ngang
+          contentContainerStyle={styles.scrollContent}
+        >
+          {ORDER_STATUSES.map((status) => (
+            <TouchableOpacity
+              key={status.id}
               style={[
-                styles.statusText,
-                selectedStatus === status.id && styles.selectedStatusText,
+                styles.statusTab,
+                selectedStatus === status.id && styles.selectedStatusTab,
               ]}
+              onPress={() => handleStatusChange(status.id)}
             >
-              {status.label}
-            </Text>
-            {statusCounts[status.id] > 0 && (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{statusCounts[status.id]}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+              <Icon
+                name={status.icon}
+                size={24}
+                color={selectedStatus === status.id ? "#ff4d4f" : "#666"}
+              />
+              <Text
+                style={[
+                  styles.statusText,
+                  selectedStatus === status.id && styles.selectedStatusText,
+                ]}
+              >
+                {status.label}
+              </Text>
+              {statusCounts[status.id] > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>
+                    {statusCounts[status.id]}
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       {/* Orders List */}
       <FlatList
@@ -107,6 +107,8 @@ const OrderScreen = ({ navigation }) => {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => <OrderItem order={item} />}
         contentContainerStyle={styles.ordersList}
+        showsVerticalScrollIndicator={true} // Hiện thanh cuộn dọc
+        style={styles.flatList}
       />
     </View>
   );
@@ -118,20 +120,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   statusTabsContainer: {
+    height: 60,
     backgroundColor: "#fff",
+    justifyContent: "center",
     paddingVertical: 8,
+  },
+  scrollContent: {
+    paddingHorizontal: 8,
+    flexDirection: "row", // Đảm bảo các phần tử xếp theo hàng ngang
   },
   statusTab: {
     height: 36,
     paddingHorizontal: 12,
     paddingVertical: 6,
     marginHorizontal: 4,
-    marginBottom: 16,
     borderRadius: 16,
     backgroundColor: "#f5f5f5",
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
   },
   selectedStatusTab: {
     backgroundColor: "#fff2f0",
@@ -160,7 +166,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   ordersList: {
-    padding: 16,
+    paddingHorizontal: 16, // Căn chỉnh danh sách
+    paddingBottom: 16, // Thêm khoảng trống cuối để cuộn dễ hơn
+  },
+  flatList: {
+    flex: 1, // Đảm bảo FlatList chiếm không gian còn lại
   },
 });
 

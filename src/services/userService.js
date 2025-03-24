@@ -17,10 +17,20 @@ export const userService = {
           address: res.address,
           role: res.role,
           shopId: res.shopId._id,
+          avatar: res.avatar,
         })
       );
       return res;
     } catch {
+      throw error.response?.data || { message: "Đã có lỗi xảy ra" };
+    }
+  },
+
+  async updateUser(id, data) {
+    try {
+      const res = await api.put(`${ENDPOINTS.USERS}/${id}`, data);
+      return res;
+    } catch (error) {
       throw error.response?.data || { message: "Đã có lỗi xảy ra" };
     }
   },
