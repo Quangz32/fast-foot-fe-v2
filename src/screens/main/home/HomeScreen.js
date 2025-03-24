@@ -7,7 +7,6 @@ import RecommendScreen from "./FoodRecommendScreen";
 import FoodDetailScreen from "./FoodDetailScreen";
 import FoodsScreen from "./FoodsScreen";
 
-import { useNavigation } from "@react-navigation/native";
 const Stack = createStackNavigator();
 const HomeScreen = () => {
   return (

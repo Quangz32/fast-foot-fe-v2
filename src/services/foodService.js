@@ -21,4 +21,22 @@ export const foodService = {
       throw error.response?.data || { message: "Đã có lỗi xảy ra" };
     }
   },
+
+  async createFood(data) {
+    try {
+      const res = await api.post(ENDPOINTS.FOODS, data);
+      return res;
+    } catch (error) {
+      throw error.response?.data || { message: "Đã có lỗi xảy ra" };
+    }
+  },
+
+  async updateFood(id, data) {
+    try {
+      const res = await api.put(`${ENDPOINTS.FOODS}/${id}`, data);
+      return res;
+    } catch (error) {
+      throw error.response?.data || { message: "Đã có lỗi xảy ra" };
+    }
+  },
 };

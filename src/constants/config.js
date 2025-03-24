@@ -15,6 +15,8 @@ export const ENDPOINTS = {
   TOP_SELLING_FOODS: "/foods/top-selling",
 
   // Shops
+  SHOPS: "/shops",
+  SHOP_REGISTER: "/shops/register",
 
   //Users
   USERS: "/users",
