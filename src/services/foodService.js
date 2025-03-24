@@ -39,4 +39,13 @@ export const foodService = {
       throw error.response?.data || { message: "Đã có lỗi xảy ra" };
     }
   },
+
+  async deleteFood(id) {
+    try {
+      const res = await api.delete(`${ENDPOINTS.FOODS}/${id}`);
+      return res;
+    } catch (error) {
+      throw error.response?.data || { message: "Đã có lỗi xảy ra" };
+    }
+  },
 };

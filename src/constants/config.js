@@ -17,6 +17,7 @@ export const ENDPOINTS = {
   // Shops
   SHOPS: "/shops",
   SHOP_REGISTER: "/shops/register",
+  
 
   //Users
   USERS: "/users",

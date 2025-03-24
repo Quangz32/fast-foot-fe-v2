@@ -186,6 +186,36 @@ const AddFood = ({ onCancel, editingFood }) => {
     }
   };
 
+  const handleDelete = () => {
+    Alert.alert("Xác nhận xoá", "Bạn có chắc chắn muốn xoá món ăn này không?", [
+      {
+        text: "Huỷ",
+        style: "cancel",
+      },
+      {
+        text: "Xoá",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await foodService.deleteFood(editingFood._id);
+            Toast.show({
+              type: "success",
+              text1: "Xoá món ăn thành công",
+            });
+            onCancel(); // Close form after successful deletion
+          } catch (error) {
+            console.error("Error deleting food:", error);
+            Toast.show({
+              type: "error",
+              text1: "Có lỗi xảy ra",
+              text2: error.response?.data?.message || "Vui lòng thử lại sau",
+            });
+          }
+        },
+      },
+    ]);
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View>
@@ -337,6 +367,15 @@ const AddFood = ({ onCancel, editingFood }) => {
             </Text>
           </TouchableOpacity>
 
+          {editingFood && (
+            <TouchableOpacity
+              style={[styles.button, styles.deleteButton]}
+              onPress={handleDelete}
+            >
+              <Text style={styles.buttonText}>Delete Food Item</Text>
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity
             style={[styles.button, styles.cancelButton]}
             onPress={onCancel}
@@ -474,6 +513,9 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: "#666",
+  },
+  deleteButton: {
+    backgroundColor: "#dc3545",
   },
 });
 

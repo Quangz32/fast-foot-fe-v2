@@ -6,15 +6,19 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  Alert,
+  Modal,
+  Button,
 } from "react-native";
-import axios from "axios";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { foodService } from "../../../services/foodService";
 import { API_URL_IMAGE } from "../../../constants/config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 
 const FoodList = ({ onEditFood }) => {
   const [foods, setFoods] = useState([]);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedFood, setSelectedFood] = useState(null);
 
   useEffect(() => {
     fetchFoods();
@@ -22,19 +26,52 @@ const FoodList = ({ onEditFood }) => {
 
   const fetchFoods = async () => {
     try {
-      const queryString = "shopId=67d7b6633078aeb7158d10d3";
+      const userJSON = await AsyncStorage.getItem("user");
+      const user = JSON.parse(userJSON);
+      const queryString = `shopId=${user.shopId}`;
       const foods = await foodService.getFoods(queryString);
       setFoods(foods);
     } catch (error) {
       console.error("Error fetching foods:", error);
-      Alert.alert("Error", "Failed to fetch food items");
+      Toast.show({
+        type: "error",
+        text1: "Có lỗi xảy ra",
+        text2: "Không thể tải danh sách món ăn",
+      });
+    }
+  };
+
+  const handleDelete = (food) => {
+    setSelectedFood(food);
+    setModalVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedFood) {
+      try {
+        await foodService.deleteFood(selectedFood._id);
+        Toast.show({
+          type: "success",
+          text1: "Xoá món ăn thành công",
+        });
+        fetchFoods(); // Refresh the list after deletion
+      } catch (error) {
+        console.error("Error deleting food:", error);
+        Toast.show({
+          type: "error",
+          text1: "Có lỗi xảy ra",
+          text2: error.response?.data?.message || "Vui lòng thử lại sau",
+        });
+      } finally {
+        setModalVisible(false);
+        setSelectedFood(null);
+      }
     }
   };
 
   const renderFoodItem = ({ item }) => (
     <View style={styles.foodItem}>
       <Image
-        // source={{ uri: item.image }}
         source={{
           uri: `${API_URL_IMAGE}${item?.image || "/uploads/placeholder.png"}`,
         }}
@@ -48,22 +85,49 @@ const FoodList = ({ onEditFood }) => {
           {item.description}
         </Text>
       </View>
-      <TouchableOpacity
-        style={styles.editButton}
-        onPress={() => onEditFood(item)}
-      >
-        <Icon name="pencil" size={24} color="#4CAF50" />
-      </TouchableOpacity>
+      <View style={styles.actionButtons}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => onEditFood(item)}
+        >
+          <Icon name="pencil" size={24} color="#4CAF50" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => handleDelete(item)}
+        >
+          <Icon name="delete" size={24} color="#dc3545" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
   return (
-    <FlatList
-      data={foods}
-      renderItem={renderFoodItem}
-      keyExtractor={(item) => item._id}
-      contentContainerStyle={styles.container}
-    />
+    <>
+      <FlatList
+        data={foods}
+        renderItem={renderFoodItem}
+        keyExtractor={(item) => item._id}
+        contentContainerStyle={styles.container}
+      />
+      <Toast />
+
+      {/* Modal for delete confirmation */}
+      <Modal visible={isModalVisible} transparent={true} animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Xác nhận xoá</Text>
+            <Text style={styles.modalMessage}>
+              Bạn có chắc chắn muốn xoá món ăn này?
+            </Text>
+            <View style={styles.modalButtons}>
+              <Button title="Huỷ" onPress={() => setModalVisible(false)} />
+              <Button title="Xoá" color="red" onPress={confirmDelete} />
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 };
 
@@ -110,9 +174,41 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#666",
   },
-  editButton: {
+  actionButtons: {
+    flexDirection: "column",
+    justifyContent: "space-around",
+    paddingLeft: 8,
+  },
+  actionButton: {
     padding: 8,
+  },
+  modalContainer: {
+    flex: 1,
     justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
 });
 
