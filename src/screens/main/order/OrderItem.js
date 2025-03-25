@@ -4,10 +4,12 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { API_URL_IMAGE } from "../../../constants/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { orderService } from "../../../services/orderService";
+import { useNavigation } from "@react-navigation/native";
 
 const OrderItem = ({ order, fetchOrders }) => {
   console.log(order);
   const [user, setUser] = useState(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -180,6 +182,7 @@ const OrderItem = ({ order, fetchOrders }) => {
           <TouchableOpacity
             style={[styles.actionButton, styles.rateButton]}
             onPress={() => {
+              navigation.navigate("ReviewOrder", { orderId: order._id });
               console.log("Rate order:", order._id);
             }}
           >

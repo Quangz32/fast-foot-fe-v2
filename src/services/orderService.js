@@ -48,13 +48,22 @@ export const orderService = {
     }
   },
 
-  async rateOrder(orderId, rating, comment) {
+  async rateOrder(reviewId, rating, comment) {
     try {
-      const res = await api.post(`${ENDPOINTS.ORDERS}/${orderId}/rate`, {
+      const res = await api.put(`${ENDPOINTS.REVIEWS}/${reviewId}`, {
         rating,
         comment,
       });
       return res.data;
+    } catch (error) {
+      throw error.response?.data || { message: "Đã có lỗi xảy ra" };
+    }
+  },
+
+  async getMyReviews() {
+    try {
+      const res = await api.get(`${ENDPOINTS.REVIEWS}/my-reviews`);
+      return res;
     } catch (error) {
       throw error.response?.data || { message: "Đã có lỗi xảy ra" };
     }

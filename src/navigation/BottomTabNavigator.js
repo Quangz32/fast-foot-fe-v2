@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeScreen from "../screens/main/home/HomeScreen";
 import OrderScreen from "../screens/main/order/OrderScreen";
+import ReviewOrderScreen from "../screens/main/order/ReviewOrderScreen";
 import NotificationsScreen from "../screens/main/notification/NotificationsScreen";
 import ProfileScreen from "../screens/main/user/ProfileScreen";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -10,6 +11,27 @@ import { createStackNavigator } from "@react-navigation/stack";
 const Stack = createStackNavigator();
 
 const Tab = createBottomTabNavigator();
+
+// Navigator riêng cho phần Order để có thể thêm màn hình Review
+const OrderNavigator = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="OrderList"
+        component={OrderScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ReviewOrder"
+        component={ReviewOrderScreen}
+        options={{
+          title: "Đánh giá đơn hàng",
+          headerShown: true,
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
 
 const BottomTabNavigator = () => {
   return (
@@ -36,10 +58,10 @@ const BottomTabNavigator = () => {
       />
       <Tab.Screen
         name="Orders"
-        component={OrderScreen}
+        component={OrderNavigator}
         options={{
           title: "Đơn hàng",
-
+          headerShown: true,
           tabBarIcon: ({ color, size }) => (
             <Icon name="receipt" size={size} color={color} />
           ),

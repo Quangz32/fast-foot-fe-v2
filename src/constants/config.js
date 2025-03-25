@@ -26,6 +26,9 @@ export const ENDPOINTS = {
   ORDERS: "/orders",
   ORDER_ITEMS: "/orders/items",
   // ORDER_STATUS: "/orders/status",
+
+  //Reviews
+  REVIEWS: "/reviews",
 };
 
 export const STATUS_CODES = {
