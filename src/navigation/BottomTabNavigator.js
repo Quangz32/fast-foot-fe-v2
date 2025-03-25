@@ -4,7 +4,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeScreen from "../screens/main/home/HomeScreen";
 import OrderScreen from "../screens/main/order/OrderScreen";
 import ReviewOrderScreen from "../screens/main/order/ReviewOrderScreen";
-import NotificationsScreen from "../screens/main/notification/NotificationsScreen";
+import MessageScreen from "../screens/main/message/MessageScreen";
 import ProfileScreen from "../screens/main/user/ProfileScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 
@@ -68,12 +68,13 @@ const BottomTabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Notifications"
-        component={NotificationsScreen}
+        name="Messages"
+        component={MessageScreen}
         options={{
-          title: "Thông báo",
+          title: "Tin nhắn",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <Icon name="bell" size={size} color={color} />
+            <Icon name="message" size={size} color={color} />
           ),
         }}
       />
