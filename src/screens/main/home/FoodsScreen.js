@@ -66,6 +66,7 @@ const FoodsScreen = ({ navigation, route }) => {
         _id: item._id,
         name: item.name,
         image: item.image,
+        rating: item.rating,
         originalPrice: item.originalPrice,
         price: item.price,
         options: item.options,

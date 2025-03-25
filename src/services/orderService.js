@@ -20,6 +20,15 @@ export const orderService = {
     }
   },
 
+  async updateOrder(orderId, orderData) {
+    try {
+      const res = await api.put(`${ENDPOINTS.ORDERS}/${orderId}`, orderData);
+      return res.data;
+    } catch (error) {
+      throw error.response?.data || { message: "Đã có lỗi xảy ra" };
+    }
+  },
+
   async updateOrderStatusByCustomer(orderId, status) {
     try {
       const res = await api.post(

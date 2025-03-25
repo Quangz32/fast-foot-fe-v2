@@ -34,6 +34,15 @@ const FoodItem = ({ item, onPress }) => {
           <Icon name="chef-hat" size={20} color={"black"} />
           <Text style={styles.restaurantName}>{shop.shopName}</Text>
         </View>
+
+        {/* Rating display */}
+        <View style={styles.ratingContainer}>
+          <Icon name="star" size={16} color="#FFD700" />
+          <Text style={styles.ratingText}>
+            {food.rating ? food.rating.toFixed(1) : "0.0"}
+          </Text>
+        </View>
+
         <View style={styles.priceContainer}>
           <Text style={styles.originalPrice}>
             {food.originalPrice?.toLocaleString()}đ
@@ -88,6 +97,16 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   restaurantName: {
+    fontSize: 14,
+    color: "#666",
+    marginLeft: 4,
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+  ratingText: {
     fontSize: 14,
     color: "#666",
     marginLeft: 4,

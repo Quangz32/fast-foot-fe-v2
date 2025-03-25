@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Modal,
+  TextInput,
+  Alert,
+} from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { API_URL_IMAGE } from "../../../constants/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -10,6 +19,14 @@ const OrderItem = ({ order, fetchOrders }) => {
   console.log(order);
   const [user, setUser] = useState(null);
   const navigation = useNavigation();
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [note, setNote] = useState(order.note || "");
+  const [paymentMethod, setPaymentMethod] = useState(
+    order.paymentMethod || "cash"
+  );
+  const [deliveryAddress, setDeliveryAddress] = useState(
+    order.deliveryAddress || ""
+  );
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -23,6 +40,7 @@ const OrderItem = ({ order, fetchOrders }) => {
   const isShop = user?._id === order?.shopId.userId;
 
   const canPlace = isCustomer && order.status === "creating";
+  const canEdit = isCustomer && order.status === "creating";
   const canConfirm = isShop && order.status === "placed";
   const canCancel =
     (isCustomer &&
@@ -60,6 +78,25 @@ const OrderItem = ({ order, fetchOrders }) => {
       fetchOrders();
     } catch (error) {
       console.error("Error updating order status:", error);
+    }
+  };
+
+  const handleUpdateOrder = async () => {
+    try {
+      await orderService.updateOrder(order._id, {
+        note,
+        paymentMethod,
+        deliveryAddress,
+      });
+      setEditModalVisible(false);
+      fetchOrders();
+      Alert.alert("Thành công", "Đã cập nhật thông tin đơn hàng");
+    } catch (error) {
+      console.error("Error updating order:", error);
+      Alert.alert(
+        "Lỗi",
+        error.message || "Đã có lỗi xảy ra khi cập nhật đơn hàng"
+      );
     }
   };
 
@@ -101,6 +138,30 @@ const OrderItem = ({ order, fetchOrders }) => {
         ))}
       </View>
 
+      {/* Order Details */}
+      {order.note && (
+        <View style={styles.noteContainer}>
+          <Text style={styles.noteLabel}>Ghi chú:</Text>
+          <Text style={styles.noteText}>{order.note}</Text>
+        </View>
+      )}
+
+      {/* Payment Method */}
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>Phương thức thanh toán:</Text>
+        <Text style={styles.detailText}>
+          {paymentMethod === "cash" && "Tiền mặt"}
+          {paymentMethod === "credit_card" && "Thẻ tín dụng"}
+          {paymentMethod === "e_wallet" && "Ví điện tử"}
+        </Text>
+      </View>
+
+      {/* Delivery Address */}
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>Địa chỉ giao hàng:</Text>
+        <Text style={styles.detailText}>{order.deliveryAddress}</Text>
+      </View>
+
       {/* Total Amount */}
       <View style={styles.totalContainer}>
         <Text style={styles.totalLabel}>Tổng tiền:</Text>
@@ -111,6 +172,20 @@ const OrderItem = ({ order, fetchOrders }) => {
 
       {/* Action Buttons */}
       <View style={styles.actionsContainer}>
+        {canEdit && (
+          <TouchableOpacity
+            style={[styles.actionButton, styles.editButton]}
+            onPress={() => {
+              setEditModalVisible(true);
+              setNote(order.note || "");
+              setPaymentMethod(order.paymentMethod || "cash");
+              setDeliveryAddress(order.deliveryAddress || "");
+            }}
+          >
+            <Text style={styles.actionButtonText}>Sửa đơn hàng</Text>
+          </TouchableOpacity>
+        )}
+
         {canPlace && (
           <TouchableOpacity
             style={[styles.actionButton, styles.placeButton]}
@@ -190,6 +265,129 @@ const OrderItem = ({ order, fetchOrders }) => {
           </TouchableOpacity>
         )}
       </View>
+
+      {/* Edit Order Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={editModalVisible}
+        onRequestClose={() => setEditModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Chỉnh sửa đơn hàng</Text>
+
+            {/* Note Input */}
+            <Text style={styles.inputLabel}>Ghi chú</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Nhập ghi chú (tùy chọn)"
+              value={note}
+              onChangeText={setNote}
+              multiline={true}
+            />
+
+            {/* Payment Method Selection */}
+            <Text style={styles.inputLabel}>Phương thức thanh toán</Text>
+            <View style={styles.paymentOptions}>
+              <TouchableOpacity
+                style={[
+                  styles.paymentOption,
+                  paymentMethod === "cash" && styles.paymentOptionSelected,
+                ]}
+                onPress={() => setPaymentMethod("cash")}
+              >
+                <Icon
+                  name="cash"
+                  size={24}
+                  color={paymentMethod === "cash" ? "#fff" : "#666"}
+                />
+                <Text
+                  style={[
+                    styles.paymentOptionText,
+                    paymentMethod === "cash" &&
+                      styles.paymentOptionTextSelected,
+                  ]}
+                >
+                  Tiền mặt
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.paymentOption,
+                  paymentMethod === "credit_card" &&
+                    styles.paymentOptionSelected,
+                ]}
+                onPress={() => setPaymentMethod("credit_card")}
+              >
+                <Icon
+                  name="credit-card"
+                  size={24}
+                  color={paymentMethod === "credit_card" ? "#fff" : "#666"}
+                />
+                <Text
+                  style={[
+                    styles.paymentOptionText,
+                    paymentMethod === "credit_card" &&
+                      styles.paymentOptionTextSelected,
+                  ]}
+                >
+                  Thẻ tín dụng
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.paymentOption,
+                  paymentMethod === "e_wallet" && styles.paymentOptionSelected,
+                ]}
+                onPress={() => setPaymentMethod("e_wallet")}
+              >
+                <Icon
+                  name="wallet"
+                  size={24}
+                  color={paymentMethod === "e_wallet" ? "#fff" : "#666"}
+                />
+                <Text
+                  style={[
+                    styles.paymentOptionText,
+                    paymentMethod === "e_wallet" &&
+                      styles.paymentOptionTextSelected,
+                  ]}
+                >
+                  Ví điện tử
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Delivery Address Input */}
+            <Text style={styles.inputLabel}>Địa chỉ giao hàng</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Nhập địa chỉ giao hàng"
+              value={deliveryAddress}
+              onChangeText={setDeliveryAddress}
+            />
+
+            {/* Modal Action Buttons */}
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelModalButton]}
+                onPress={() => setEditModalVisible(false)}
+              >
+                <Text style={styles.cancelModalButtonText}>Hủy</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.saveModalButton]}
+                onPress={handleUpdateOrder}
+              >
+                <Text style={styles.saveModalButtonText}>Lưu</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -202,21 +400,21 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     elevation: 2,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   shopInfo: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
-    paddingBottom: 12,
+    paddingBottom: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
   shopName: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "bold",
     marginLeft: 8,
   },
   itemsContainer: {
@@ -224,22 +422,18 @@ const styles = StyleSheet.create({
   },
   itemRow: {
     marginBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f5f5f5",
-    paddingBottom: 12,
   },
   itemMainInfo: {
     flexDirection: "row",
-    alignItems: "flex-start",
   },
   foodImage: {
     width: 60,
     height: 60,
-    borderRadius: 8,
-    marginRight: 12,
+    borderRadius: 6,
   },
   itemDetails: {
     flex: 1,
+    marginLeft: 12,
   },
   itemInfo: {
     flexDirection: "row",
@@ -247,25 +441,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   itemName: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "500",
     flex: 1,
-    marginRight: 8,
   },
   itemQuantity: {
     fontSize: 14,
     color: "#666",
   },
   itemOptions: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#666",
-    marginTop: 4,
+    marginTop: 2,
   },
   itemPrice: {
     fontSize: 14,
+    fontWeight: "500",
     color: "#ff4d4f",
     marginTop: 4,
-    textAlign: "right",
   },
   totalContainer: {
     flexDirection: "row",
@@ -277,11 +470,11 @@ const styles = StyleSheet.create({
     borderTopColor: "#eee",
   },
   totalLabel: {
-    fontSize: 14,
-    color: "#666",
+    fontSize: 16,
+    fontWeight: "500",
   },
   totalAmount: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#ff4d4f",
   },
@@ -292,14 +485,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   actionButton: {
-    paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
-    minWidth: 100,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    justifyContent: "center",
     alignItems: "center",
   },
   placeButton: {
     backgroundColor: "#ff4d4f",
+  },
+  editButton: {
+    backgroundColor: "#1890ff",
   },
   confirmButton: {
     backgroundColor: "#4CAF50", // Green for confirm
@@ -328,6 +524,119 @@ const styles = StyleSheet.create({
     color: "#666",
     fontSize: 14,
     fontWeight: "500",
+  },
+  noteContainer: {
+    flexDirection: "row",
+    marginBottom: 8,
+  },
+  noteLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginRight: 8,
+  },
+  noteText: {
+    fontSize: 14,
+    color: "#666",
+    flex: 1,
+  },
+  detailRow: {
+    flexDirection: "row",
+    marginBottom: 8,
+  },
+  detailLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginRight: 8,
+  },
+  detailText: {
+    fontSize: 14,
+    color: "#666",
+    flex: 1,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 20,
+    width: "90%",
+    maxHeight: "80%",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    marginBottom: 8,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 16,
+    fontSize: 14,
+  },
+  paymentOptions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  paymentOption: {
+    flex: 1,
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 6,
+    marginHorizontal: 4,
+  },
+  paymentOptionSelected: {
+    backgroundColor: "#ff4d4f",
+    borderColor: "#ff4d4f",
+  },
+  paymentOptionText: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 4,
+  },
+  paymentOptionTextSelected: {
+    color: "#fff",
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 8,
+  },
+  modalButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    marginLeft: 8,
+  },
+  cancelModalButton: {
+    backgroundColor: "#f5f5f5",
+  },
+  saveModalButton: {
+    backgroundColor: "#ff4d4f",
+  },
+  cancelModalButtonText: {
+    color: "#666",
+    fontSize: 14,
+  },
+  saveModalButtonText: {
+    color: "#fff",
+    fontSize: 14,
   },
 });
 

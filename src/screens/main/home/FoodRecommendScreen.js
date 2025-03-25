@@ -17,18 +17,27 @@ import FoodItem from "./FoodItem"; // Import FoodItem
 import FoodModal from "./FoodModal"; // Import FoodModal
 import { API_URL_IMAGE } from "../../../constants/config";
 import { orderService } from "../../../services/orderService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const FoodRecommendScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState([]);
   const [topSellingFoods, setTopSellingFoods] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     fetchCategories();
     fetchTopSellingFoods();
     fetchOrders();
+    fetchUser();
   }, []);
+
+  const fetchUser = async () => {
+    const userJSON = await AsyncStorage.getItem("user");
+    setUser(JSON.parse(userJSON));
+  };
 
   const fetchOrders = async () => {
     const orders = await orderService.getOrders();
@@ -52,6 +61,7 @@ const FoodRecommendScreen = ({ navigation }) => {
         _id: item._id,
         name: item.foodDetails.name,
         image: item.foodDetails.image,
+        rating: item.foodDetails.rating,
         originalPrice: item.foodDetails.originalPrice,
         price: item.foodDetails.price,
         shop: item.shopDetails,
@@ -98,8 +108,7 @@ const FoodRecommendScreen = ({ navigation }) => {
           <View style={styles.locationContent}>
             <Icon name="map-marker" size={20} color="#ff4d4f" />
             <Text style={styles.locationText} numberOfLines={1}>
-              194 Quốc Lộ 21 Thôn 3 Xã Thạch Hòa,Huyện Thạch Thất,Thành Phố Hà
-              Nội
+              {user?.address}
             </Text>
             <TouchableOpacity>
               <Icon name="refresh" size={20} color="#666" />
