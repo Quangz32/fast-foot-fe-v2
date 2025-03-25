@@ -21,12 +21,8 @@ const OrderItem = ({ order, fetchOrders }) => {
   const navigation = useNavigation();
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [note, setNote] = useState(order.note || "");
-  const [paymentMethod, setPaymentMethod] = useState(
-    order.paymentMethod || "cash"
-  );
-  const [deliveryAddress, setDeliveryAddress] = useState(
-    order.deliveryAddress || ""
-  );
+  const [paymentMethod, setPaymentMethod] = useState(order.paymentMethod || "cash");
+  const [deliveryAddress, setDeliveryAddress] = useState(order.deliveryAddress || "");
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -43,8 +39,7 @@ const OrderItem = ({ order, fetchOrders }) => {
   const canEdit = isCustomer && order.status === "creating";
   const canConfirm = isShop && order.status === "placed";
   const canCancel =
-    (isCustomer &&
-      ["creating", "placed", "preparing"].includes(order.status)) ||
+    (isCustomer && ["creating", "placed", "preparing"].includes(order.status)) ||
     (isShop && ["placed", "preparing", "delivering"].includes(order.status));
   const canDeliver = isShop && order.status === "preparing";
   const canDelivered = isShop && order.status === "delivering";
@@ -53,11 +48,8 @@ const OrderItem = ({ order, fetchOrders }) => {
 
   // Calculate total price for each item including options
   const items = order.items.map((item) => {
-    const optionsPriceDiff = item.options.reduce(
-      (sum, opt) => sum + (opt.priceDiff || 0),
-      0
-    );
-    const totalPrice = (item.foodId.price + optionsPriceDiff) * item.quantity;
+    const optionsPriceDiff = item.options.reduce((sum, opt) => sum + (opt.priceDiff || 0), 0);
+    const totalPrice = (item.foodId?.price + optionsPriceDiff) * item.quantity;
     return {
       ...item,
       totalPrice,
@@ -68,10 +60,7 @@ const OrderItem = ({ order, fetchOrders }) => {
     try {
       if (isCustomer && ["placed", "received", "cancelled"].includes(status)) {
         await orderService.updateOrderStatusByCustomer(orderId, status);
-      } else if (
-        isShop &&
-        ["preparing", "delivering", "delivered", "cancelled"].includes(status)
-      ) {
+      } else if (isShop && ["preparing", "delivering", "delivered", "cancelled"].includes(status)) {
         await orderService.updateOrderStatusByShop(orderId, status);
       }
 
@@ -93,10 +82,7 @@ const OrderItem = ({ order, fetchOrders }) => {
       Alert.alert("Thành công", "Đã cập nhật thông tin đơn hàng");
     } catch (error) {
       console.error("Error updating order:", error);
-      Alert.alert(
-        "Lỗi",
-        error.message || "Đã có lỗi xảy ra khi cập nhật đơn hàng"
-      );
+      Alert.alert("Lỗi", error.message || "Đã có lỗi xảy ra khi cập nhật đơn hàng");
     }
   };
 
@@ -124,14 +110,10 @@ const OrderItem = ({ order, fetchOrders }) => {
                 </View>
                 {item.options.length > 0 && (
                   <Text style={styles.itemOptions}>
-                    {item.options
-                      .map((opt) => `${opt.name}: ${opt.value}`)
-                      .join(", ")}
+                    {item.options.map((opt) => `${opt.name}: ${opt.value}`).join(", ")}
                   </Text>
                 )}
-                <Text style={styles.itemPrice}>
-                  {item.totalPrice.toLocaleString()}đ
-                </Text>
+                <Text style={styles.itemPrice}>{item.totalPrice.toLocaleString()}đ</Text>
               </View>
             </View>
           </View>
@@ -165,9 +147,7 @@ const OrderItem = ({ order, fetchOrders }) => {
       {/* Total Amount */}
       <View style={styles.totalContainer}>
         <Text style={styles.totalLabel}>Tổng tiền:</Text>
-        <Text style={styles.totalAmount}>
-          {order.totalAmount.toLocaleString()}đ
-        </Text>
+        <Text style={styles.totalAmount}>{order.totalAmount.toLocaleString()}đ</Text>
       </View>
 
       {/* Action Buttons */}
@@ -297,16 +277,11 @@ const OrderItem = ({ order, fetchOrders }) => {
                 ]}
                 onPress={() => setPaymentMethod("cash")}
               >
-                <Icon
-                  name="cash"
-                  size={24}
-                  color={paymentMethod === "cash" ? "#fff" : "#666"}
-                />
+                <Icon name="cash" size={24} color={paymentMethod === "cash" ? "#fff" : "#666"} />
                 <Text
                   style={[
                     styles.paymentOptionText,
-                    paymentMethod === "cash" &&
-                      styles.paymentOptionTextSelected,
+                    paymentMethod === "cash" && styles.paymentOptionTextSelected,
                   ]}
                 >
                   Tiền mặt
@@ -316,8 +291,7 @@ const OrderItem = ({ order, fetchOrders }) => {
               <TouchableOpacity
                 style={[
                   styles.paymentOption,
-                  paymentMethod === "credit_card" &&
-                    styles.paymentOptionSelected,
+                  paymentMethod === "credit_card" && styles.paymentOptionSelected,
                 ]}
                 onPress={() => setPaymentMethod("credit_card")}
               >
@@ -329,8 +303,7 @@ const OrderItem = ({ order, fetchOrders }) => {
                 <Text
                   style={[
                     styles.paymentOptionText,
-                    paymentMethod === "credit_card" &&
-                      styles.paymentOptionTextSelected,
+                    paymentMethod === "credit_card" && styles.paymentOptionTextSelected,
                   ]}
                 >
                   Thẻ tín dụng
@@ -352,8 +325,7 @@ const OrderItem = ({ order, fetchOrders }) => {
                 <Text
                   style={[
                     styles.paymentOptionText,
-                    paymentMethod === "e_wallet" &&
-                      styles.paymentOptionTextSelected,
+                    paymentMethod === "e_wallet" && styles.paymentOptionTextSelected,
                   ]}
                 >
                   Ví điện tử

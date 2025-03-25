@@ -170,7 +170,10 @@ const LoginScreen = ({ navigation }) => {
             <View style={styles.registerContainer}>
               <Text style={styles.registerText}>
                 Bạn chưa có tài khoản?{" "}
-                <TouchableOpacity disabled={loading}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Register")}
+                  disabled={loading}
+                >
                   <Text style={styles.registerLink}>Đăng ký ngay</Text>
                 </TouchableOpacity>
               </Text>

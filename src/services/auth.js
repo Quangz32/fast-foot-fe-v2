@@ -17,6 +17,19 @@ export const authService = {
     }
   },
 
+  async register(userData) {
+    try {
+      const response = await api.post(ENDPOINTS.REGISTER, userData);
+      return response;
+    } catch (error) {
+      console.log("Registration error:", error.response?.data);
+      if (error.response?.data) {
+        throw error.response.data;
+      }
+      throw { message: "Đã có lỗi xảy ra khi đăng ký" };
+    }
+  },
+
   async forgotPassword(email) {
     try {
       const response = await api.post(ENDPOINTS.FORGOT_PASSWORD, { email });
